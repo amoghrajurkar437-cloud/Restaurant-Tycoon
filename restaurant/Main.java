@@ -1,18 +1,18 @@
-package restaurant;
+package restaurant; // Package organize classes in Java, must be named the after the folder name
 import javax.swing.*;
 
 public class Main {
     public static void main(String[] args){
-        JFrame window = new JFrame();
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(false);
-        window.setLocationRelativeTo(null);
-        window.setVisible(true);
-        window.setSize(1200, 800);
-        Gamepanel gamePanel = new Gamepanel();
-        window.add(gamePanel);
-        window.pack();
-        System.out.print("hello world");
+        JFrame window = new JFrame(); // Create a new JFrame window
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close the application when the window is closed
+        window.setResizable(false); // Prevent the window from being resized
+        window.setLocationRelativeTo(null); // Center the window on the screen
+        window.setVisible(true); // Make the window visible
+        window.setSize(1200, 800); // Set the size of the window
+        window.setTitle("Restaurant"); // Set the title of the window
+        Gamepanel gamePanel = new Gamepanel(); // Create an instance of the GamePanel class
+        window.add(gamePanel); // Add the GamePanel to the window
+        window.pack(); // Adjust the window size to fit the preferred size of its components
     }
 }
 
