@@ -1,7 +1,7 @@
 package entity;
+import java.awt.*;
 import main.Gamepanel;
 import main.KeyHandler;
-import java.awt.*;
 
 public class Player extends Entity {
     Gamepanel gp; // Reference to the Gamepanel, which can be used to access game-related properties and methods

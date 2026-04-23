@@ -1,5 +1,5 @@
 package main; // Package organize classes in Java, must be named the after the folder name
-import javax.swing.*; // Importing the Swing library for creating graphical user interfaces (GUI)
+import javax.swing.*;
 
 public class Main {
     public static void main(String[] args){
