@@ -15,6 +15,10 @@ public class Gamepanel extends JPanel implements Runnable {
     final int screenWidth = tileSize * maxScreenCol; // 1280 pixels
     final int screenHeight = tileSize * maxScreenRow; // 960 pixels
 
+    int boostBarWidth = 220;
+    int boostBarHeight = 28;
+    int boostBarMargin = 20;
+
     int FPS = 60; // Frames per second for the game loop
 
     KeyHandler keyH = new KeyHandler(); // Key handler for handling keyboard input
@@ -78,12 +82,46 @@ public class Gamepanel extends JPanel implements Runnable {
         player.update(); // Update the player's state, including movement and boost logic
     }
 
+    private void drawBoostBar(Graphics2D g2) {
+        int x = screenWidth - boostBarWidth - boostBarMargin;
+        int y = boostBarMargin;
+        float ratio = player.getBoostChargeRatio();
+        int innerWidth = boostBarWidth - 4;
+        int fillWidth = Math.max(0, Math.min(innerWidth, (int) (innerWidth * ratio)));
+
+        // Background container
+        g2.setColor(new Color(0, 0, 0, 170));
+        g2.fillRoundRect(x, y, boostBarWidth, boostBarHeight, 14, 14);
+
+        // Empty bar
+        g2.setColor(new Color(30, 30, 30));
+        g2.fillRoundRect(x + 2, y + 2, innerWidth, boostBarHeight - 4, 12, 12);
+
+        // Filled boost bar
+        g2.setColor(new Color(0, 120, 255));
+        g2.fillRoundRect(x + 2, y + 2, fillWidth, boostBarHeight - 4, 12, 12);
+
+        // Border
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(x, y, boostBarWidth, boostBarHeight, 14, 14);
+
+        // Label
+        g2.setFont(new Font("Arial", Font.BOLD, 16));
+        String label = "SPACE = SPRINT";
+        FontMetrics fm = g2.getFontMetrics();
+        int textX = x + (boostBarWidth - fm.stringWidth(label)) / 2;
+        int textY = y + ((boostBarHeight - fm.getHeight()) / 2) + fm.getAscent();
+        g2.drawString(label, textX, textY);
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g); // Call the superclass method to ensure proper painting
         Graphics2D g2 = (Graphics2D) g; // Cast Graphics to Graphics2D for better control over rendering
         // Draw game elements here using g2
         player.draw(g2); // Draw the player on the screen
+        drawBoostBar(g2); // Draw the boost recharge bar in the top-right corner
         g2.dispose(); // Dispose of the graphics context to free up resources
     }
 }

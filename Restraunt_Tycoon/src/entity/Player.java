@@ -15,6 +15,9 @@ public class Player extends Entity {
     public int boostTimer = 0; // Timer to track the duration of the boost
     public boolean boostReloading = false; // Indicates whether the boost is currently reloading
     public int reloadTimer = 0; // Timer to track the duration of the boost reload
+    public final int maxBoostTimer = 30; // Frames boost lasts at 60 FPS
+    public final int maxBoostReload = 60; // Frames to recharge boost at 60 FPS
+    public int animationThreshold; // Variable to control the speed of the walking animation, which can be adjusted based on boost status
 
     public Player(Gamepanel gp, KeyHandler keyH) {
         this.gp = gp; // Initialize the Gamepanel reference
@@ -55,7 +58,14 @@ public class Player extends Entity {
             }
 
             SpriteCounter++; // Increment the sprite counter for animation timing
-            if (SpriteCounter > 12) { // Change sprite every 12 frames (0.2 seconds at 60 FPS)
+
+            if (boostActive) {
+                animationThreshold = 6; // Faster animation when boosting
+            } else {
+                animationThreshold = 12; // Normal animation speed
+            }
+
+            if (SpriteCounter > animationThreshold) {
                 if (SpriteNum == 1) {
                     SpriteNum = 2; // Switch to the second sprite image
                 } else if (SpriteNum == 2) {
@@ -94,10 +104,21 @@ public class Player extends Entity {
         
         // Set player speed based on boost status
         if (boostActive) {
-            speed = 9; // Increased speed when boost is active
+            speed = 8; // Increased speed when boost is active
         } else {
             speed = 5;
         }
+    }
+
+    public float getBoostChargeRatio() {
+        if (boostActive || !boostReloading) {
+            return 1.0f;
+        }
+        return 1.0f - (float) reloadTimer / maxBoostReload;
+    }
+
+    public boolean isBoostReady() {
+        return !boostActive && !boostReloading;
     }
 
     public void draw(Graphics2D g2) {
@@ -114,10 +135,34 @@ public class Player extends Entity {
         } else {
             // Use walking animation when the player is moving
             switch (direction) {
-                case "up" -> image = (SpriteNum == 1) ? up1 : up2;
-                case "down" -> image = (SpriteNum == 1) ? down1 : down2;
-                case "left" -> image = (SpriteNum == 1) ? left1 : left2;
-                case "right" -> image = (SpriteNum == 1) ? right1 : right2;
+                case "up" -> {
+                    if (SpriteNum == 1) {
+                        image = up1;
+                    } else {
+                        image = up2;
+                    }
+                }
+                case "down" -> {
+                if (SpriteNum == 1) {
+                        image = down1;
+                    } else {
+                        image = down2;
+                    }
+                }
+                case "left" -> {
+                    if (SpriteNum == 1) {
+                        image = left1;
+                    } else {
+                        image = left2;
+                    }
+                }
+                case "right" -> {
+                    if (SpriteNum == 1) {
+                        image = right1;
+                    } else {
+                        image = right2;
+                    }
+                }
             }
         }
 
