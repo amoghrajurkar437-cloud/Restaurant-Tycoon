@@ -15,6 +15,6 @@ public class Main {
         window.setVisible(true); // Make the window visible
 
         gamePanel.startGameThread(); // Start the game thread to run the game loop
-        gamePanel.requestFocusInWindow(); // Request focus for the game panel to receive key inputs
+        gamePanel.requestFocusInWindow(); // Request focus for the game panel to receive key inputsd
     }
 }
