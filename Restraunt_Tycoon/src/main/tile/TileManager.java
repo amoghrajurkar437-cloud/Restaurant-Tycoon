@@ -12,9 +12,9 @@ import main.Gamepanel;
 
 public class TileManager {
     Gamepanel gp;
-    Tile[] tile;
-    int mapTileNum[][];
-    int stallTileNum[][]; // Stall layer: 15x12 grid (each cell = 4x4 old tiles = 64x64 pixels)
+    public Tile[] tile;
+    public int mapTileNum[][];
+    public int stallTileNum[][]; // Stall layer: 15x12 grid (each cell = 4x4 old tiles = 64x64 pixels)
     int stallTileSize; // Each stall block is 4 tiles wide = 256 pixels
     int stallMapCol; // 60 / 4 = 15
     int stallMapRow; // 45 / 4 = 11.25, rounded to 12
@@ -58,12 +58,14 @@ public class TileManager {
 
         tile[1] = new Tile();
         tile[1].image = loadImage("Rock.png"); // res/tiles/Rock.png
+        tile[1].collision = true;
 
         tile[2] = new Tile();
         tile[2].image = loadImage("Floor.png"); // res/tiles/Floor.png
 
         tile[3] = new Tile();
         tile[3].image = loadImage("Bush.png"); // res/tiles/Bush.png
+        tile[3].collision = true;
 
         tile[4] = new Tile();
         tile[4].image = loadImage("Concrete_Path.png"); // res/tiles/Concrete_Path.png
@@ -91,7 +93,7 @@ public class TileManager {
         tile[10].collision = true;
     }
 
-private void loadMap(String filePath) {
+    private void loadMap(String filePath) {
         try {
             InputStream is = getClass().getResourceAsStream(filePath);
             BufferedReader br;
@@ -162,7 +164,7 @@ private void loadMap(String filePath) {
         }
     }
 
-public void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2) {
         // Draw the background tiles first
         int worldCol = 0;
         int worldRow = 0;
@@ -192,7 +194,7 @@ public void draw(Graphics2D g2) {
         }
         
 
-// Draw the stall layer on top (each stall = 4x4 tiles = 64x64 pixels)
+        // Draw the stall layer on top (each stall = 4x4 tiles = 64x64 pixels)
         int stallCol = 0;
         int stallRow = 0;
 
@@ -200,13 +202,13 @@ public void draw(Graphics2D g2) {
             int stallNum = stallTileNum[stallCol][stallRow];
             
             if (stallNum != 0) { // Only draw if there's a stall
-                // Calculate world position (each stall block is 4x4 old tiles)
+                // Calculate world position 
                 int stallWorldX = stallCol * stallTileSize;
                 int stallWorldY = stallRow * stallTileSize;
                 int stallScreenX = stallWorldX - gp.player.worldX + gp.player.screenX;
                 int stallScreenY = stallWorldY - gp.player.worldY + gp.player.screenY;
 
-// Only draw if within visible screen area
+                // Only draw if within visible screen area
                 if (stallScreenX + stallTileSize > 0 && stallScreenX < gp.screenWidth &&
                     stallScreenY + stallTileSize > 0 && stallScreenY < gp.screenHeight) {
                     // First draw the 4x4 background tiles to avoid black bg
@@ -222,7 +224,7 @@ public void draw(Graphics2D g2) {
                             }
                         }
                     }
-                    // Draw the stall image scaled to 4x4 tile size (256x256 pixels)
+                    // Draw the stall image scaled to 4x4 tile size (64x64 pixels)
                     g2.drawImage(tile[stallNum].image, stallScreenX, stallScreenY, stallTileSize, stallTileSize, null);
                 }
             }

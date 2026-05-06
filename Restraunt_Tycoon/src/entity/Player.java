@@ -28,6 +28,11 @@ public class Player extends Entity {
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2); // Set the player's X position to the center of the screen
         screenY = gp.screenHeight / 2 - (gp.tileSize / 2); // Set the player's Y position to the center of the screen
 
+        solidArea = new Rectangle(); // Define the solid area for collision detection (adjust as needed)
+        solidArea.x = 8;
+        solidArea.y = 16;
+        solidArea.width = gp.tileSize - 16;
+        solidArea.height = gp.tileSize - 16;
         setDefaultValues(); // Set the default values for the player's position and speed
         getPlayerImage(); // Load player images
     }
@@ -47,24 +52,46 @@ public class Player extends Entity {
             isMoving = true;
 
             if (keyH.upPressed == true) {
-                worldY -= speed; // Move player up
                 direction = "up";
             }
             if (keyH.downPressed == true) {
-                worldY += speed; // Move player down
                 direction = "down";
             }
             if (keyH.leftPressed == true) {
-                worldX -= speed; // Move player left
                 direction = "left";
             }
             if (keyH.rightPressed == true) {
-                worldX += speed; // Move player right
                 direction = "right";
             }
 
-            SpriteCounter++; // Increment the sprite counter for animation timing
+            // Check for collisions with tiles
+            collisionOn = false; // Reset collision flag before checking for collisions
+            gp.cChecker.checkTile(this); // Check for collisions with tiles
+            System.out.println("Collision On: " + collisionOn); // Debugging output to check collision status
 
+            // If collision is fasle, player can move
+            if (collisionOn == false) {
+                switch (direction) {
+                    case "up" -> {
+                    worldY -= speed; // Move player up
+                    break;
+                    }
+                    case "down" -> {
+                        worldY += speed; // Move player down
+                        break;
+                    }
+                    case "left" -> {
+                        worldX -= speed; // Move player left
+                        break;
+                    }
+                    case "right" -> {
+                        worldX += speed; // Move player right
+                        break;
+                    }
+                }
+            }
+
+            SpriteCounter++; // Increment the sprite counter for animation timing
             if (boostActive) {
                 animationThreshold = 6; // Faster animation when boosting
             } else {

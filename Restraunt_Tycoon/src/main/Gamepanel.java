@@ -8,9 +8,10 @@ public class Gamepanel extends JPanel implements Runnable {
     // Screen tile settings
     final int orignalTileSize = 16;
     public final int tileSize = orignalTileSize * 4;
+    public final int stallTileSize = tileSize * 4; // Each stall block is 4 tiles wide = 256 pixels
 
     // 20 x 15 tiles set up
-    public final int maxScreenCol = 15;
+    public final int maxScreenCol = 20  ;
     public final int maxScreenRow = 15;
 
     public final int screenWidth = tileSize * maxScreenCol; // 960 pixels
@@ -25,6 +26,7 @@ public class Gamepanel extends JPanel implements Runnable {
     TileManager tileM = new TileManager(this); // Create an instance of the TileManager class to manage tile images and properties
     KeyHandler keyH = new KeyHandler(); // Key handler for handling keyboard input
     Thread gameThread; // Thread to run the game loop
+    public CollisionChecker cChecker = new CollisionChecker(this); // Create an instance of the CollisionChecker class to handle collision detection
     public Player player = new Player(this, keyH); // Create a player instance and pass the Gamepanel and KeyHandler references
 
     // World settings
