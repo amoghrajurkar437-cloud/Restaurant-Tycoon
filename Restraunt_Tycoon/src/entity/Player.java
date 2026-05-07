@@ -10,7 +10,6 @@ import main.KeyHandler;
 public class Player extends Entity {
     Gamepanel gp; // Reference to the Gamepanel, which can be used to access game-related properties and methods
     KeyHandler keyH; // Reference to the KeyHandler, which can be used to check the state of key presses
-    // Boost variables
     public boolean boostActive = false; // Indicates whether the boost is currently active
     public int boostTimer = 0; // Timer to track the duration of the boost
     public boolean boostReloading = false; // Indicates whether the boost is currently reloading
@@ -67,7 +66,6 @@ public class Player extends Entity {
             // Check for collisions with tiles
             collisionOn = false; // Reset collision flag before checking for collisions
             gp.cChecker.checkTile(this); // Check for collisions with tiles
-            System.out.println("Collision On: " + collisionOn); // Debugging output to check collision status
 
             // If collision is fasle, player can move
             if (collisionOn == false) {
@@ -141,6 +139,8 @@ public class Player extends Entity {
         } else {
             speed = 5;
         }
+
+        System.out.println("Player TileX: " + worldX / gp.tileSize + ", TileY: " + worldY / gp.tileSize);
     }
 
     public float getBoostChargeRatio() {

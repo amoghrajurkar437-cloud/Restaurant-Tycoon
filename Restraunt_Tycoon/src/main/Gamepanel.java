@@ -11,7 +11,7 @@ public class Gamepanel extends JPanel implements Runnable {
     public final int stallTileSize = tileSize * 4; // Each stall block is 4 tiles wide = 256 pixels
 
     // 20 x 15 tiles set up
-    public final int maxScreenCol = 20  ;
+    public final int maxScreenCol = 20;
     public final int maxScreenRow = 15;
 
     public final int screenWidth = tileSize * maxScreenCol; // 960 pixels
@@ -35,11 +35,10 @@ public class Gamepanel extends JPanel implements Runnable {
     public final int worldWidth = tileSize * maxWorldCol; // Total width of the game world in pixels
     public final int worldHeight = tileSize * maxWorldRow; // Total height of the game world in pixels
 
-
     // Constructor that allows us to set up the game panel
     public Gamepanel(){
         this.setPreferredSize(new Dimension(screenWidth, screenHeight)); // Set the preferred size of the panel
-        this.setBackground(Color.white); // Set the background color of the panel to white
+        this.setBackground(new Color(62, 194, 83)); // Set the background color of the panel to white
         this.setDoubleBuffered( true); // Improve rendering performance by enabling double buffering
         this.addKeyListener(keyH);
         this.setFocusable(true); // Make the panel focusable to receive keyboard input

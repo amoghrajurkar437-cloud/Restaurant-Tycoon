@@ -14,7 +14,8 @@ public class TileManager {
     Gamepanel gp;
     public Tile[] tile;
     public int mapTileNum[][];
-    public int stallTileNum[][]; // Stall layer: 15x12 grid (each cell = 4x4 old tiles = 64x64 pixels)
+    public int stallTileNum[][];
+    public int invisibleWallTileNum[][];
     int stallTileSize; // Each stall block is 4 tiles wide = 256 pixels
     int stallMapCol; // 60 / 4 = 15
     int stallMapRow; // 45 / 4 = 11.25, rounded to 12

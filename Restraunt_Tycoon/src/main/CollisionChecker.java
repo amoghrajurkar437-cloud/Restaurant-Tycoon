@@ -2,14 +2,14 @@ package main;
 import entity.Entity;
 
 public class CollisionChecker {
-    Gamepanel gp; // Reference to the Gamepanel, which can be used to access game-related properties and methods
+    Gamepanel gp;
 
     public CollisionChecker(Gamepanel gp) {
-        this.gp = gp; // Initialize the Gamepanel reference
+        this.gp = gp;
     }
 
     public void checkTile(Entity entity) {
-
+        // Calculate the edges of the entity's solid area in world coordinates
         int entityLeftWorldX = entity.worldX + entity.solidArea.x; // Calculate the left edge of the entity's solid area in world coordinates
         int entityRightWorldX = entity.worldX + entity.solidArea.x + entity.solidArea.width; // Calculate the right edge of the entity's solid area in world coordinates
         int entityTopWorldY = entity.worldY + entity.solidArea.y; // Calculate the top edge of the entity's solid area in world coordinates
@@ -19,19 +19,20 @@ public class CollisionChecker {
         int entityRightCol = entityRightWorldX / gp.tileSize; // Determine which tile column the right edge of the solid area is in
         int entityTopRow = entityTopWorldY / gp.tileSize; // Determine which tile row the top edge of the solid area is in
         int entityBottomRow = entityBottomWorldY / gp.tileSize; // Determine which tile row the bottom edge of the solid area is in
-        int tileNum1, tileNum2;
 
-                // Stalls are 4x4 tiles, so we need to check the stall layer separately
+        // Stalls are 4x4 tiles, so we need to check the stall layer separately
         int stallLeftWorldX = entity.worldX + entity.solidArea.x; // Calculate the left edge of the entity's solid area in world coordinates (same as tile layer)
         int stallRightWorldX = entity.worldX + entity.solidArea.x + entity.solidArea.width; // Calculate the right edge of the entity's solid area in world coordinates (same as tile layer)
         int stallTopWorldY = entity.worldY + entity.solidArea.y; // Calculate the top edge of the entity's solid area in world coordinates (same as tile layer)
         int stallBottomWorldY = entity.worldY + entity.solidArea.y + entity.solidArea.height; // Calculate the bottom edge of the entity's solid area in world coordinates (same as tile layer)
 
         int stallLeftCol = stallLeftWorldX / gp.stallTileSize; // Determine which stall column the left edge of the solid area is in
-        int stallRightCol = stallRightWorldX / gp.stallTileSize; // Determine
+        int stallRightCol = stallRightWorldX / gp.stallTileSize; // Determine which stall column the right edge of the solid area is in
         int stallTopRow = stallTopWorldY / gp.stallTileSize; // Determine which stall row the top edge of the solid area is in
-        int stallBottomRow = stallBottomWorldY / gp.stallTileSize; // Determine
+        int stallBottomRow = stallBottomWorldY / gp.stallTileSize; // Determine which stall row the bottom edge of the solid area is in
+        int tileNum1, tileNum2; // Variables to hold the tile numbers for collision checking
 
+        // Check collision with stall layer first since it's on top of the tile layer
         switch (entity.direction) {
             case "up" -> {
                 entityTopRow = (stallTopWorldY - entity.speed) / gp.stallTileSize; // Calculate the new top row if the entity moves up
@@ -39,6 +40,7 @@ public class CollisionChecker {
                 tileNum2 = gp.tileM.stallTileNum[stallRightCol][stallTopRow]; // Get the tile number for the right edge of the solid area
                 if (gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true) {
                     entity.collisionOn = true; // Set collision flag if either tile has collision properties
+                    checkStall(entity);
                 }
             }
             case "down" -> {
@@ -47,6 +49,7 @@ public class CollisionChecker {
                 tileNum2 = gp.tileM.stallTileNum[stallRightCol][stallBottomRow]; // Get the tile number for the right edge of the solid area
                 if (gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true) {
                     entity.collisionOn = true; // Set collision flag if either tile has collision properties
+                    checkStall(entity);
                 }
             }
             case "left" -> {
@@ -55,6 +58,7 @@ public class CollisionChecker {
                 tileNum2 = gp.tileM.stallTileNum[stallLeftCol][stallBottomRow]; // Get the tile number for the right edge of the solid area
                 if (gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true) {
                     entity.collisionOn = true; // Set collision flag if either tile has collision properties
+                    checkStall(entity);
                 }
             }
             case "right" -> {
@@ -63,10 +67,12 @@ public class CollisionChecker {
                 tileNum2 = gp.tileM.stallTileNum[stallRightCol][stallBottomRow]; // Get the tile number for the right edge of the solid area
                 if (gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true) {
                     entity.collisionOn = true; // Set collision flag if either tile has collision properties
+                    checkStall(entity);
                 }
             }
         }
 
+        // If no collision with stall layer, check tile layer
         switch (entity.direction) {
             case "up" -> {
                 entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize; // Calculate the new top row if the entity moves up
@@ -102,4 +108,10 @@ public class CollisionChecker {
             }
         }
     }
+
+    public void checkStall(Entity entity) {
+        System.out.println("Checking stall collision for entity at worldX: " + entity.worldX + ", worldY: " + entity.worldY);
+        System.out.println("Entity direction: " + entity.direction);
+    }
+
 }

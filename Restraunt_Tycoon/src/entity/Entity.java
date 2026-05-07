@@ -6,8 +6,7 @@ import java.awt.image.BufferedImage;
 public class Entity {
     public int worldX, worldY; // Position of the entity in the game world
     public int speed; // Speed at which any entity moves
-    // Placeholder for the entity's image, which can be used for rendering the entity on the screen
-    public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2 ;
+    public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2 ; // Sprite images for the entity's movement in different directions (up, down, left, right) with two frames each for animation
     public BufferedImage upStill, downStill, leftStill, rightStill; // Still images for when the player is not moving
     public boolean isMoving; // Variable to track whether the entity is currently moving
     public String direction;
@@ -16,4 +15,3 @@ public class Entity {
     public Rectangle solidArea; // Rectangle representing the solid area of the entity for collision detection
     public boolean collisionOn = false; // Flag to indicate whether a collision is currently occurring for the entity
 }
-
