@@ -8,6 +8,7 @@ import main.Gamepanel;
 import main.KeyHandler;
 
 public class Player extends Entity {
+    GamePanel gp;
     KeyHandler keyH; // Reference to the KeyHandler, which can be used to check the state of key presses
     public boolean boostActive = false; // Indicates whether the boost is currently active
     public int boostTimer = 0; // Timer to track the duration of the boost
