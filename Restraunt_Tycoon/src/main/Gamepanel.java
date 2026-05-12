@@ -90,6 +90,7 @@ public class Gamepanel extends JPanel implements Runnable {
 
     public void update() {
         player.update(); // Update the player's state, including movement and boost logic
+        tileM.loadStallInsides();
     }
 
     private void drawBoostBar(Graphics2D g2) {
