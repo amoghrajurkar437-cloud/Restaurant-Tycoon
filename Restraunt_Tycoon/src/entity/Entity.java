@@ -1,6 +1,8 @@
 package entity;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+
+
 import main.Gamepanel;
 
 // Superclass for all entities in the game, such as players, customers, and servers. This class can be extended to create specific types of entities with their own unique behaviors and attributes.
@@ -20,4 +22,5 @@ public class Entity {
     public Entity(Gamepanel gp){
         this.gp = gp;
     }
+    
 }

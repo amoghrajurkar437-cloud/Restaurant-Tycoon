@@ -1,5 +1,6 @@
 package main;
 import entity.Player;
+import entity.Customer;
 import java.awt.*;
 import javax.swing.*;
 import main.tile.TileManager;
@@ -28,6 +29,10 @@ public class Gamepanel extends JPanel implements Runnable {
     Thread gameThread; // Thread to run the game loop
     public CollisionChecker cChecker = new CollisionChecker(this); // Create an instance of the CollisionChecker class to handle collision detection
     public Player player = new Player(this, keyH); // Create a player instance and pass the Gamepanel and KeyHandler references
+    
+    // Customer array
+    public Customer[] customers;
+    private final int NUM_CUSTOMERS = 5; // Number of customers to spawn
 
     // World settings
     public final int maxWorldCol = 60;
@@ -42,6 +47,19 @@ public class Gamepanel extends JPanel implements Runnable {
         this.setDoubleBuffered( true); // Improve rendering performance by enabling double buffering
         this.addKeyListener(keyH);
         this.setFocusable(true); // Make the panel focusable to receive keyboard input
+        
+        // Initialize customers
+        spawnCustomers();
+    }
+    
+    private void spawnCustomers() {
+        customers = new Customer[NUM_CUSTOMERS];
+        for (int i = 0; i < NUM_CUSTOMERS; i++) {
+            // Spawn customers at random positions in the world
+            int randomX = (int) (Math.random() * (maxWorldCol - 5)) * tileSize + tileSize * 5;
+            int randomY = (int) (Math.random() * (maxWorldRow - 5)) * tileSize + tileSize * 5;
+            customers[i] = new Customer(this, randomX, randomY);
+        }
     }
 
     public void startGameThread() {
@@ -90,6 +108,12 @@ public class Gamepanel extends JPanel implements Runnable {
 
     public void update() {
         player.update(); // Update the player's state, including movement and boost logic
+        
+        // Update all customers
+        for (Customer customer : customers) {
+            customer.update();
+        }
+        
         tileM.loadStallInsides();
     }
 
@@ -132,6 +156,12 @@ public class Gamepanel extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D) g; // Cast Graphics to Graphics2D for better control over rendering
         // Draw game elements here using g2
         tileM.draw(g2); // Draw the tiles on the screen
+        
+        // Draw all customers
+        for (Customer customer : customers) {
+            customer.draw(g2);
+        }
+        
         player.draw(g2); // Draw the player on the screen
         drawBoostBar(g2); // Draw the boost recharge bar in the top-right corner
         g2.dispose(); // Dispose of the graphics context to free up resources
