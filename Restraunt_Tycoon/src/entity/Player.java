@@ -8,7 +8,6 @@ import main.Gamepanel;
 import main.KeyHandler;
 
 public class Player extends Entity {
-    GamePanel gp;
     KeyHandler keyH; // Reference to the KeyHandler, which can be used to check the state of key presses
     public boolean boostActive = false; // Indicates whether the boost is currently active
     public int boostTimer = 0; // Timer to track the duration of the boost
@@ -21,7 +20,8 @@ public class Player extends Entity {
     public final int screenY; // Y position of the player on the screen, which can be used for rendering the player
 
     public Player(Gamepanel gp, KeyHandler keyH) {
-        this.gp = gp; // Initialize the Gamepanel reference
+
+        super(gp);
         this.keyH = keyH; // Initialize the KeyHandler reference
 
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2); // Set the player's X position to the center of the screen
@@ -66,6 +66,20 @@ public class Player extends Entity {
             // Check for collisions with tiles
             collisionOn = false; // Reset collision flag before checking for collisions
             gp.cChecker.checkTile(this); // Check for collisions with tiles
+
+            // Check world boundary — stop the player when the edge of the map would come into view
+            if (direction.equals("up") && worldY - screenY <= 0) {
+                collisionOn = true;
+            }
+            if (direction.equals("down") && worldY + screenY + gp.tileSize >= gp.worldHeight) {
+                collisionOn = true;
+            }
+            if (direction.equals("left") && worldX - screenX <= 0) {
+                collisionOn = true;
+            }
+            if (direction.equals("right") && worldX + screenX + gp.tileSize >= gp.worldWidth) {
+                collisionOn = true;
+            }
 
             // If collision is fasle, player can move
             if (collisionOn == false) {
@@ -139,8 +153,6 @@ public class Player extends Entity {
         } else {
             speed = 5;
         }
-
-        System.out.println("Player TileX: " + worldX / gp.tileSize + ", TileY: " + worldY / gp.tileSize);
     }
 
     public float getBoostChargeRatio() {
