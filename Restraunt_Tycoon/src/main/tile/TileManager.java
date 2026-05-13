@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 import main.CollisionChecker;
 import main.Gamepanel;
- 
+
 public class TileManager {
     Gamepanel gp;
     public Tile[] tile;
@@ -164,13 +164,22 @@ public class TileManager {
 
     public void loadStallInsides() {
         String current = CollisionChecker.contactStall;
-        // Only do something when the player first touches a new stall
+
+        // Player walked away — reset so coming back triggers again
+        if (current.isEmpty()) {
+            lastHandledStall = "";
+            return;
+        }
+
+        // Same stall, already handled this contact — do nothing
         if (current.equals(lastHandledStall)) return;
+
         lastHandledStall = current;
+
         switch (current) {
-            case "Blue" -> {
+            case "Blue"  -> {
                 System.out.println("yes");
-            } case "Red"  -> {
+            } case "Red"   -> {
                 System.out.println("pls");
             } case "Green" -> {
                 System.out.println("Say Wallahi");
