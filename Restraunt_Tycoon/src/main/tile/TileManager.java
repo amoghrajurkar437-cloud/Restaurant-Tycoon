@@ -1,4 +1,5 @@
 package main.tile;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -34,8 +35,6 @@ public class TileManager {
         getTileImage();
         loadMap("/res/maps/worldmap1.txt");
         loadStalls("/res/maps/stalls.txt");
-        // NOTE: loadStallInsides() is no longer called here — contactStall is always
-        // empty at startup. Call it from Gamepanel.update() instead.
     }
 
     private BufferedImage loadImage(String fileName) {
@@ -171,20 +170,61 @@ public class TileManager {
             return;
         }
 
-        // Same stall, already handled this contact — do nothing
+        // Same stall already handled
         if (current.equals(lastHandledStall)) return;
 
         lastHandledStall = current;
 
         switch (current) {
-            case "Blue"  -> {
-                System.out.println("yes");
-            } case "Red"   -> {
-                System.out.println("pls");
-            } case "Green" -> {
-                System.out.println("Say Wallahi");
-            }
+            case "Blue" -> loadTextFile("blue_stall.txt");
+            case "Red" -> loadTextFile("red_stall.txt");
+            case "Green" -> loadTextFile("green_stall.txt");
         }
+    }
+
+    private void loadTextFile(String fileName) {
+        try {
+            InputStream is = getClass().getResourceAsStream("/res/maps/" + fileName);
+
+            BufferedReader br;
+
+            if (is != null) {
+                br = new BufferedReader(new InputStreamReader(is));
+            } else {
+                br = new BufferedReader(new java.io.FileReader("res/maps/" + fileName));
+            }
+
+            String line;
+
+            System.out.println("===== " + fileName + " =====");
+
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            br.close();
+
+        } catch (IOException e) {
+            System.out.println("Failed to load " + fileName);
+        }
+    }
+
+    public void drawStallInterior(Graphics2D g2) {
+        g2.setColor(new Color(120, 90, 60));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+        g2.setColor(new Color(180, 140, 100));
+        g2.fillRect(100, 100,
+                gp.screenWidth - 200,
+                gp.screenHeight - 200);
+
+        // doorway
+        g2.setColor(Color.darkGray);
+        g2.fillRect(
+                gp.screenWidth / 2 - 50,
+                gp.screenHeight - 200,
+                100,
+                40
+        );
     }
 
     public void draw(Graphics2D g2) {

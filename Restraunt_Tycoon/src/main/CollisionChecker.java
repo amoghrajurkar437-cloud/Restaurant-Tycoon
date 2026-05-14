@@ -4,6 +4,7 @@ import entity.Entity;
 public class CollisionChecker {
     Gamepanel gp;
     public static String contactStall = "";
+    public static String lastContactStall = "";
 
     public CollisionChecker(Gamepanel gp) {
         this.gp = gp;
@@ -36,8 +37,8 @@ public class CollisionChecker {
                 tileNum1 = gp.tileM.stallTileNum[stallLeftCol][stallTopRow];
                 tileNum2 = gp.tileM.stallTileNum[stallRightCol][stallTopRow];
                 if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
-                    entity.collisionOn = true;
                     contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                    lastContactStall = contactStall;
                 }
             }
             case "down" -> {
@@ -45,8 +46,8 @@ public class CollisionChecker {
                 tileNum1 = gp.tileM.stallTileNum[stallLeftCol][stallBottomRow];
                 tileNum2 = gp.tileM.stallTileNum[stallRightCol][stallBottomRow];
                 if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
-                    entity.collisionOn = true;
                     contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                    lastContactStall = contactStall;
                 }
             }
             case "left" -> {
@@ -54,8 +55,8 @@ public class CollisionChecker {
                 tileNum1 = gp.tileM.stallTileNum[stallLeftCol][stallTopRow];
                 tileNum2 = gp.tileM.stallTileNum[stallLeftCol][stallBottomRow];
                 if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
-                    entity.collisionOn = true;
                     contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                    lastContactStall = contactStall;
                 }
             }
             case "right" -> {
@@ -63,8 +64,8 @@ public class CollisionChecker {
                 tileNum1 = gp.tileM.stallTileNum[stallRightCol][stallTopRow];
                 tileNum2 = gp.tileM.stallTileNum[stallRightCol][stallBottomRow];
                 if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
-                    entity.collisionOn = true;
                     contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                    lastContactStall = contactStall;
                 }
             }
         }
