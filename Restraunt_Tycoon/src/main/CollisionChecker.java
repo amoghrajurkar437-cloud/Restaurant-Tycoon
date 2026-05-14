@@ -29,6 +29,7 @@ public class CollisionChecker {
 
         // Reset contactStall each frame — will be re-set if actively colliding
         contactStall = "";
+        lastContactStall = "";
 
         // Check stall layer
         switch (entity.direction) {

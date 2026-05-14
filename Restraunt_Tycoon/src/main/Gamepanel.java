@@ -23,7 +23,7 @@ public class Gamepanel extends JPanel implements Runnable {
 
     int FPS = 60; // Frames per second for the game loop
 
-    TileManager tileM = new TileManager(this); // Create an instance of the TileManager class to manage tile images and properties
+    public TileManager tileM = new TileManager(this); // Create an instance of the TileManager class to manage tile images and properties
     KeyHandler keyH = new KeyHandler(); // Key handler for handling keyboard input
     Thread gameThread; // Thread to run the game loop
     public CollisionChecker cChecker = new CollisionChecker(this); // Create an instance of the CollisionChecker class to handle collision detection

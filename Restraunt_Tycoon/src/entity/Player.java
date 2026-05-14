@@ -55,8 +55,8 @@ public class Player extends Entity {
         if(keyH.interactPressed &&
         gp.gameState.equals(gp.WORLD_STATE) &&
         !CollisionChecker.lastContactStall.equals("")) {
-            System.out.println("ENTERING STALL");
             enterStall();
+            keyH.interactPressed = false;
         }
 
         if (keyH.upPressed == true || keyH.downPressed == true || keyH.leftPressed == true || keyH.rightPressed == true) {
@@ -197,7 +197,7 @@ public class Player extends Entity {
 
     public void enterStall() {
         gp.gameState = gp.STALL_STATE;
-        System.out.println(gp.gameState);
+        gp.tileM.loadStallInsides();
         roomX = gp.screenWidth / 2 - gp.tileSize / 2;
         roomY = gp.screenHeight - 350;
         gp.repaint();
@@ -205,6 +205,7 @@ public class Player extends Entity {
 
     public void exitStall() {
         gp.gameState = gp.WORLD_STATE;
+        CollisionChecker.lastContactStall = "";
         gp.repaint();
     }
 

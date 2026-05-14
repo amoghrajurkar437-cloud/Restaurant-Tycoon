@@ -62,14 +62,14 @@ public class TileManager {
         tile[1].collision = true;
  
         tile[2] = new Tile();
-        tile[2].image = loadImage("Floor.png");
+        tile[2].image = loadImage("Stall_wall.png");
  
         tile[3] = new Tile();
         tile[3].image = loadImage("Bush.png");
         tile[3].collision = true;
  
         tile[4] = new Tile();
-        tile[4].image = loadImage("Concrete_Path.png");
+        tile[4].image = loadImage("Stall_floor.png");
  
         tile[5] = new Tile();
         tile[5].image = loadImage("Road.png");
@@ -185,9 +185,7 @@ public class TileManager {
     private void loadTextFile(String fileName) {
         try {
             InputStream is = getClass().getResourceAsStream("/res/maps/" + fileName);
-
             BufferedReader br;
-
             if (is != null) {
                 br = new BufferedReader(new InputStreamReader(is));
             } else {
@@ -195,11 +193,22 @@ public class TileManager {
             }
 
             String line;
-
-            System.out.println("===== " + fileName + " =====");
-
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
+                String[] numbers = line.split("\\s+"); // splits by spaces
+                for (String num : numbers) {
+                    switch (fileName) {
+                        case ("red_stall.txt") ->{
+                            System.out.println(num);
+                            break;
+                        } case ("blue_stall.txt") -> {
+                            System.out.println(num);
+                            break;
+                        } case ("green_stall.txt") -> {
+                            System.out.println(num);
+                            break;
+                        }
+                    }
+                }
             }
 
             br.close();
@@ -210,6 +219,7 @@ public class TileManager {
     }
 
     public void drawStallInterior(Graphics2D g2) {
+
         g2.setColor(new Color(120, 90, 60));
         g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
         g2.setColor(new Color(180, 140, 100));
