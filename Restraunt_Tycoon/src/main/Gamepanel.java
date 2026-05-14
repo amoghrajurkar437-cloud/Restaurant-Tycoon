@@ -1,6 +1,6 @@
 package main;
-import entity.Player;
 import entity.Customer;
+import entity.Player;
 import java.awt.*;
 import javax.swing.*;
 import main.tile.TileManager;
@@ -56,8 +56,8 @@ public class Gamepanel extends JPanel implements Runnable {
         customers = new Customer[NUM_CUSTOMERS];
         for (int i = 0; i < NUM_CUSTOMERS; i++) {
             // Spawn customers at random positions in the world
-            int randomX = (int) (Math.random() * (maxWorldCol - 5)) * tileSize + tileSize * 5;
-            int randomY = (int) (Math.random() * (maxWorldRow - 5)) * tileSize + tileSize * 5;
+            int randomX = tileSize + tileSize * 5;
+            int randomY =  tileSize + tileSize * 5;
             customers[i] = new Customer(this, randomX, randomY);
         }
     }

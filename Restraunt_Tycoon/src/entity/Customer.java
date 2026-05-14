@@ -22,18 +22,17 @@ public class Customer extends Entity {
 
     private void getCustomerImage() {
         try {
-            up1 = ImageIO.read(new File("res/player/up1.png"));
-            up2 = ImageIO.read(new File("res/player/up2.png"));
-            down1 = ImageIO.read(new File("res/player/down1.png"));
-            down2 = ImageIO.read(new File("res/player/down2.png"));
-            left1 = ImageIO.read(new File("res/player/left1.png"));
-            left2 = ImageIO.read(new File("res/player/left2.png"));
-            right1 = ImageIO.read(new File("res/player/right1.png"));
-            right2 = ImageIO.read(new File("res/player/right2.png"));
-            upStill = ImageIO.read(new File("res/player/up_still.png"));
-            downStill = ImageIO.read(new File("res/player/down_still.png"));
-            leftStill = ImageIO.read(new File("res/player/left_still.png"));
-            rightStill = ImageIO.read(new File("res/player/right_still.png"));
+            up1 = ImageIO.read(new File("res/customer/customer1up1.png"));
+            down1 = ImageIO.read(new File("res/customer/customer1down1.png"));
+            left1 = ImageIO.read(new File("res/customer/customer1left1.png"));
+            right1 = ImageIO.read(new File("res/customer/customer1right1.png"));
+            upStill = ImageIO.read(new File("res/customer/customer1up_still.png"));
+            downStill = ImageIO.read(new File("res/customer/customer1down_still.png")); 
+            leftStill = ImageIO.read(new File("res/customer/customer1left_still.png"));
+            rightStill = ImageIO.read(new File("res/customer/customer1right_still.png"));
+    
+            
+
         } catch (IOException e) {
             System.out.println("Error loading customer images");
         }
@@ -58,37 +57,22 @@ public class Customer extends Entity {
                 // Use walking animation when the player is moving
                 switch (direction) {
                     case "up" -> {
-                        if (SpriteNum == 1) {
-                            image = up1;
-                        } else {
-                            image = up2;
-                        }
+                        image = up1;
                     }
                     case "down" -> {
-                    if (SpriteNum == 1) {
-                            image = down1;
-                        } else {
-                            image = down2;
-                        }
+                        image = down1;
                     }
                     case "left" -> {
-                        if (SpriteNum == 1) {
-                            image = left1;
-                        } else {
-                            image = left2;
-                        }
+                        image = left1;
                     }
                     case "right" -> {
-                        if (SpriteNum == 1) {
-                            image = right1;
-                        } else {
-                            image = right2;
-                        }
+                        image = right1;
                     }
                 }
             }
-
-        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null); // Draw the player image at the current position with the specified tile size
+        int drawX = screenX - gp.player.worldX + gp.player.screenX;
+        int drawY = screenY - gp.player.worldY + gp.player.screenY;
+        g2.drawImage(image, drawX, drawY, gp.tileSize, gp.tileSize, null); // Draw the customer image at the current position with the specified tile size
 
     }
 }
