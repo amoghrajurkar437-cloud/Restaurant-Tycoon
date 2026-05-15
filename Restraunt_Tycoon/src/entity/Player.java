@@ -165,11 +165,12 @@ public class Player extends Entity {
         }
 
         if(gp.gameState.equals(gp.STALL_STATE)) {
+            // Exit zone matches the door drawn in TileManager — bottom-right, one tile from each wall
             Rectangle exitZone = new Rectangle(
-                    gp.screenWidth / 2 - 50,
-                    gp.screenHeight - 200,
-                    100,
-                    40
+                    gp.tileM.doorX,
+                    gp.tileM.doorY,
+                    gp.tileSize,
+                    gp.tileSize
             );
             Rectangle playerBox = new Rectangle(
                     roomX,
