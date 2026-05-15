@@ -104,12 +104,15 @@ public class Player extends Entity {
                         case "right" -> worldX += speed;
                     }
                 } else if(gp.gameState.equals(gp.STALL_STATE)) {
-                    switch (direction) {
-                        case "up" -> roomY -= speed;
-                        case "down" -> roomY += speed;
-                        case "left" -> roomX -= speed;
-                        case "right" -> roomX += speed;
+                    if (!gp.cChecker.checkStallTile(roomX, roomY, direction, speed)) {
+                        switch (direction) {
+                            case "up" -> roomY -= speed;
+                            case "down" -> roomY += speed;
+                            case "left" -> roomX -= speed;
+                            case "right" -> roomX += speed;
+                        }
                     }
+
                 }
             }
 

@@ -271,6 +271,9 @@ public class TileManager {
         g2.fillRect(doorX, doorY, gp.tileSize, gp.tileSize);
     }
 
+    public int[][] getCurrentStallMap() {
+        return currentStallMap;
+    }
     public void draw(Graphics2D g2) {
         int worldCol = 0;
         int worldRow = 0;

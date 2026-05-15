@@ -104,6 +104,55 @@ public class CollisionChecker {
         }
     }
 
+    public boolean checkStallTile(int roomX, int roomY, String direction, int speed) {
+        int left   = roomX + gp.player.solidArea.x;
+        int right  = roomX + gp.player.solidArea.x + gp.player.solidArea.width;
+        int top    = roomY + gp.player.solidArea.y;
+        int bottom = roomY + gp.player.solidArea.y + gp.player.solidArea.height;
+
+        int leftCol, rightCol, topRow, bottomRow;
+
+        switch (direction) {
+            case "up" -> {
+                topRow   = (top - speed) / gp.tileSize;
+                leftCol  = left  / gp.tileSize;
+                rightCol = right / gp.tileSize;
+                if (topRow < 0) return true;
+                int t1 = gp.tileM.getCurrentStallMap()[leftCol][topRow];
+                int t2 = gp.tileM.getCurrentStallMap()[rightCol][topRow];
+                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) return true;
+            }
+            case "down" -> {
+                bottomRow = (bottom + speed) / gp.tileSize;
+                leftCol   = left  / gp.tileSize;
+                rightCol  = right / gp.tileSize;
+                if (bottomRow >= 15) return true;
+                int t1 = gp.tileM.getCurrentStallMap()[leftCol][bottomRow];
+                int t2 = gp.tileM.getCurrentStallMap()[rightCol][bottomRow];
+                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) return true;
+            }
+            case "left" -> {
+                leftCol  = (left - speed) / gp.tileSize;
+                topRow   = top    / gp.tileSize;
+                bottomRow= bottom / gp.tileSize;
+                if (leftCol < 0) return true;
+                int t1 = gp.tileM.getCurrentStallMap()[leftCol][topRow];
+                int t2 = gp.tileM.getCurrentStallMap()[leftCol][bottomRow];
+                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) return true;
+            }
+            case "right" -> {
+                rightCol = (right + speed) / gp.tileSize;
+                topRow   = top    / gp.tileSize;
+                bottomRow= bottom / gp.tileSize;
+                if (rightCol >= 20) return true;
+                int t1 = gp.tileM.getCurrentStallMap()[rightCol][topRow];
+                int t2 = gp.tileM.getCurrentStallMap()[rightCol][bottomRow];
+                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) return true;
+            }
+        }
+        return false;
+    }
+
     private String getStallName(int tileNum) {
         return switch (tileNum) {
             case 8  -> "Red";
