@@ -35,7 +35,6 @@ public class TileManager {
     private int[][] currentStallMap = null;
 
     // Door position — bottom-right corner, one tileSize away from each wall
-    // Calculated once here so drawStallInterior and Player.java both use the same values
     public int doorX;
     public int doorY;
 
@@ -50,8 +49,8 @@ public class TileManager {
         stallTileNum = new int[stallMapCol][stallMapRow];
 
         // Door is one tileSize away from the right and bottom walls
-        doorX = gp.screenWidth  - gp.tileSize * 2; // one tile gap from the right
-        doorY = gp.screenHeight - gp.tileSize * 2; // one tile gap from the bottom
+        doorX = gp.screenWidth  - gp.tileSize;
+        doorY = gp.screenHeight - gp.tileSize * 8;
 
         getTileImage();
         loadMap("/res/maps/worldmap1.txt");
@@ -68,8 +67,7 @@ public class TileManager {
             if (is != null) {
                 return ImageIO.read(is);
             }
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
 
         try {
             return ImageIO.read(new File("res/tiles/" + fileName));
@@ -89,6 +87,7 @@ public class TileManager {
 
         tile[2] = new Tile();
         tile[2].image = loadImage("Stall_wall.png");
+        tile[2].collision = true;
 
         tile[3] = new Tile();
         tile[3].image = loadImage("Bush.png");
@@ -267,7 +266,7 @@ public class TileManager {
         }
 
         // Draw the door — one tileSize square, bottom-right corner, one tile from each wall
-        g2.setColor(Color.darkGray);
+        g2.setColor(new Color(32, 32, 32));
         g2.fillRect(doorX, doorY, gp.tileSize, gp.tileSize);
     }
 

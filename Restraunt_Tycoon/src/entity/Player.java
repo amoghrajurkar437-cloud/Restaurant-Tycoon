@@ -112,7 +112,6 @@ public class Player extends Entity {
                             case "right" -> roomX += speed;
                         }
                     }
-
                 }
             }
 
