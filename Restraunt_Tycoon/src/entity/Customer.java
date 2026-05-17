@@ -6,16 +6,20 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
+
 import javax.imageio.ImageIO;
 import main.Gamepanel;
 
 public class Customer extends Entity {
     public  int screenX; // X position of the customer on the screen, which can be used for rendering the customer
     public  int screenY; // Y position of the customer on the screen, which can be used for rendering the customer
-    public int path; // Variable to track the customer's path or movement pattern, which can be used for AI behavior or pathfinding
-    int blueStallX = 700;
-    int blueStallY = 500;
-    public Random rand = new Random(); // Random object to generate random numbers, which can be used for randomizing the customer's behavior or movement
+    public int stall1X = 870;
+    public int stall1Y = 780;
+    public int stall2X = 2140;
+    public int stall2Y = 1030;
+    public Random rand = new Random();
+    public int path = rand.nextInt(2)+1; // Randomly choose a path for the customer to take (1 or 2)
+
     public Customer(Gamepanel gp, int x, int y) {
         super(gp);
         direction = "up";
@@ -24,6 +28,7 @@ public class Customer extends Entity {
         this.worldY = y;
         screenX = x;
         screenY = y;
+        
 
 
         getCustomerImage();
@@ -50,11 +55,43 @@ public class Customer extends Entity {
     }
 
 
+    public void path(){
+        
+        if (path==1){
+            if (worldY>stall1Y){
+                direction = "up";
+                update(); // Update the customer's position and behavior based on the chosen path
+            }
+            else if (worldX>stall1X){
+                direction = "left";
+                update(); // Update the customer's position and behavior based on the chosen path
+    
+            
+            }
+            
+        }
+        if (path==2){
+            if (worldY>1300){
+                direction = "up";
+                update(); // Update the customer's position and behavior based on the chosen path
+            }
+            else if (worldX<stall2X){
+                direction = "right";
+                update(); // Update the customer's position and behavior based on the chosen path
+            }
+            else if (worldY>stall2Y){
+                direction = "up";
+                update(); // Update the customer's position and behavior based on the chosen path
+            }
+        }
+    }
+
+
     public void update() {
         // Logic to update the customer's position and behavior goes here
         isMoving = false;
-        //path = rand.nextInt(3   )+1; // Generate a random number to determine the customer's path or movement pattern
-        path=1;
+        
+
         // Check for collisions with tiles
         collisionOn = false; // Reset collision flag before checking for collisions
         gp.cChecker.checkTile(this); // Check for collisions with tiles
@@ -63,7 +100,7 @@ public class Customer extends Entity {
         // Check world boundary — stop the player when the edge of the map would come into view
         if (direction.equals("up") && worldY <= 0) {
             collisionOn = true;      
-      }
+        }
         if (direction.equals("down") && worldY + gp.tileSize >= gp.worldHeight) {
             collisionOn = true;
         }
@@ -74,41 +111,34 @@ public class Customer extends Entity {
             collisionOn = true;
         }
 
-        if (path == 1) {
-            if (Math.abs(worldX - blueStallX) > speed) {
-                direction = (worldX > blueStallX) ? "left" : "right";
-            } else if (Math.abs(worldY - blueStallY) > speed) {
-                direction = (worldY > blueStallY) ? "up" : "down";
-            } else {
-                // Arrived at stall
-                isMoving = false;
-                // Optionally, set direction to a "still" state or trigger interaction
-            }
-        }
-        // If collision is fasle, player can move
+
+        // If collision is false, customer can move
         if (collisionOn == false) {
             isMoving = true;
             switch (direction) {
                 case "up" -> {
                     worldY -= speed; // Update worldX to reflect the customer's movement in the world
+                    isMoving = true;
                     break;
                 }
                 case "down" -> {
                     worldY += speed; // Update worldY to reflect the customer's movement in the world
+                    isMoving = true;
                     break;
                         
                  }
                 case "left" -> {
                     worldX -= speed; // Update worldX to reflect the customer's movement in the world
+                    isMoving = true;    
                     break;
                 }
                     case "right" -> {
                     worldX += speed; // Update worldX to reflect the customer's movement in the world
+                    isMoving = true;
                     break;
                 }
             }
         }
-            
 
         
 

@@ -111,7 +111,7 @@ public class Gamepanel extends JPanel implements Runnable {
         
         // Update all customers
         for (Customer customer : customers) {
-            customer.update();
+            customer.path();
         }
         
         tileM.loadStallInsides();
