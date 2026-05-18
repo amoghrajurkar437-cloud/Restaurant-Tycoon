@@ -59,19 +59,12 @@ public class Gamepanel extends JPanel implements Runnable {
         double delta = 0; // Variable to track the time difference for frame updates
         long lastTime = System.nanoTime();
         long currentTime;
-        // FPS check
-        //long timer = 0; 
-        //int drawCount = 0;
 
         // Game loop logic
         while (gameThread != null) {
             // Calculate the time difference and update the game state at the specified FPS
             currentTime = System.nanoTime();
             delta += (currentTime - lastTime) / drawInterval;
-            // FPS check
-            //long timer = 0; 
-            //int drawCount = 0;
-            //timer += currentTime - lastTime;
             lastTime = currentTime;
 
             // If enough time has passed (delta >= 1), update the game state and repaint the screen
@@ -79,16 +72,8 @@ public class Gamepanel extends JPanel implements Runnable {
                 update(); // Update game state
                 repaint(); // Request a repaint to update the screen
                 delta--;
-                // drawCount++; FPS check - Increment the draw count for FPS calculation
             }
 
-            // FPS check - Print the actual FPS every second for debugging purposes
-            /*if (timer >= 1000000000) {
-                // Print the actual FPS every second for debugging purposes
-                System.out.println("FPS: " + drawCount);
-                drawCount = 0; // Reset the draw count for the next second
-                timer = 0; // Reset the timer for the next second
-            }*/
         }
     }
 

@@ -56,7 +56,7 @@ public class TileManager {
         loadMap("/res/maps/worldmap1.txt");
         loadStalls("/res/maps/stalls.txt");
 
-        // Pre-load all three stall interiors so entering is instant
+        // Load all three stall interiors so entering is instant
         loadInteriorMap("red_stall.txt",   redStallMap);
         loadInteriorMap("blue_stall.txt",  blueStallMap);
         loadInteriorMap("green_stall.txt", greenStallMap);
@@ -186,8 +186,6 @@ public class TileManager {
         }
     }
 
-    // Reads a stall interior txt file into the given 2D array using a while loop,
-    // exactly like loadMap() does for the world map
     private void loadInteriorMap(String fileName, int[][] targetMap) {
         try {
             InputStream is = getClass().getResourceAsStream("/res/maps/" + fileName);
@@ -215,14 +213,12 @@ public class TileManager {
                     row++;
                 }
             }
-
             br.close();
         } catch (IOException e) {
             System.out.println("Failed to load interior map: " + fileName);
         }
     }
 
-    // Called when the player enters a stall — sets currentStallMap to the right array
     public void loadStallInsides() {
         String current = CollisionChecker.lastContactStall;
 
@@ -231,11 +227,10 @@ public class TileManager {
             return;
         }
 
-        // Same stall already set — no work to do
+        // Same stall already set = no work to do
         if (current.equals(lastHandledStall)) return;
 
         lastHandledStall = current;
-
         switch (current) {
             case "Red"   -> currentStallMap = redStallMap;
             case "Blue"  -> currentStallMap = blueStallMap;
@@ -243,8 +238,8 @@ public class TileManager {
         }
     }
 
-    // Draws the stall interior using the tile map, then draws the door on top
     public void drawStallInterior(Graphics2D g2) {
+        // Draws the stall interior using the tile map, then draws the door on top
         if (currentStallMap != null) {
             int col = 0;
             int row = 0;
@@ -265,7 +260,7 @@ public class TileManager {
             g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
         }
 
-        // Draw the door — one tileSize square, bottom-right corner, one tile from each wall
+        // Draw the exit door in the stall
         g2.setColor(new Color(32, 32, 32));
         g2.fillRect(doorX, doorY, gp.tileSize, gp.tileSize);
     }
@@ -273,13 +268,13 @@ public class TileManager {
     public int[][] getCurrentStallMap() {
         return currentStallMap;
     }
+
     public void draw(Graphics2D g2) {
         int worldCol = 0;
         int worldRow = 0;
 
         while (worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {
             int tileNum = mapTileNum[worldCol][worldRow];
-
             int worldX = worldCol * gp.tileSize;
             int worldY = worldRow * gp.tileSize;
             int screenX = worldX - gp.player.worldX + gp.player.screenX;
@@ -292,7 +287,6 @@ public class TileManager {
                 g2.drawImage(tile[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
             }
             worldCol++;
-
             if (worldCol == gp.maxWorldCol) {
                 worldCol = 0;
                 worldRow++;
@@ -310,7 +304,6 @@ public class TileManager {
                 int stallWorldY = stallRow * stallTileSize;
                 int stallScreenX = stallWorldX - gp.player.worldX + gp.player.screenX;
                 int stallScreenY = stallWorldY - gp.player.worldY + gp.player.screenY;
-
                 if (stallScreenX + stallTileSize > 0 && stallScreenX < gp.screenWidth &&
                     stallScreenY + stallTileSize > 0 && stallScreenY < gp.screenHeight) {
                     for (int i = 0; i < 4; i++) {

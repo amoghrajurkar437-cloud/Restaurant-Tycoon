@@ -14,6 +14,6 @@ public class Main {
         window.pack(); // Adjust the window size to fit the preferred size of its components
         window.setVisible(true); // Make the window visible
         gamePanel.startGameThread(); // Start the game thread to run the game loops
-        gamePanel.requestFocusInWindow(); // Request focus for the game panel to receive key inputsd
-    }
+        gamePanel.requestFocusInWindow(); // Request focus for the game panel to receive key inputs
+	}
 }
