@@ -7,7 +7,6 @@ import javax.imageio.ImageIO;
 import main.CollisionChecker;
 import main.Gamepanel;
 import main.KeyHandler;
-import main.OrderList;
 
 public class Player extends Entity {
     Gamepanel gp; // Reference to the Gamepanel, which can be used to access game-related properties and methods
@@ -202,16 +201,19 @@ public class Player extends Entity {
     public void enterStall() {
         gp.gameState = gp.STALL_STATE;
         gp.tileM.loadStallInsides();
+        gp.currentStallType = CollisionChecker.lastContactStall;
+        // Load fresh orders for whichever stall we just walked into
+        gp.orderBoard.loadForStall(CollisionChecker.lastContactStall);
         roomX = gp.screenWidth / 2 - gp.tileSize / 2;
         roomY = gp.screenHeight - 350;
         gp.repaint();
-
-        OrderList order = new OrderList(1, CollisionChecker.contactStall);
-        System.out.println(order);
     }
 
     public void exitStall() {
         gp.gameState = gp.WORLD_STATE;
+        // Reset restock typing state so it doesn't carry over to next visit
+        gp.restockPanel.typingMode = false;
+        gp.keyH.typingMode         = false;
         CollisionChecker.lastContactStall = "";
         gp.repaint();
     }

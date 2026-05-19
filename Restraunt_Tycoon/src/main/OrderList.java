@@ -1,77 +1,56 @@
 package main;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class OrderList {
-    String[] Order = { "", ""};
-    int[] OrderQuantity = {0,0};
+    // Each entry is { itemName, quantity }
+    public ArrayList<String[]> items = new ArrayList<>();
 
-    public OrderList (int level, String stall) {
-        switch (level){
-            case (1)-> {
-                Random num = new Random();
-                int looped = 0;
-                for (int i = 0; i < Order.length; i++, looped++) {
-                    if ((stall).equals("Red")){
+    public OrderList(int level, String stall) {
+        Random num = new Random();
+        switch (level) {
+            case 1 -> {
+                int orderCount = num.nextInt(2, 4); // 2 or 3 items per customer
+                for (int i = 0; i < orderCount; i++) {
+                    if (stall.equals("Red")) {
                         int choice = num.nextInt(2);
-                        if (choice == 0) {
-                            Order[i] = "Burger";
-                            QuantityOf(Order[i], looped);
-                        }
-                        if (choice == 1){
-                            Order[i] = "Fries";
-                            QuantityOf(Order[i], looped);
-                        }
+                        // Type of food, burger or fries at random
+                        String food = choice == 0 ? "Burger" : "Fries";
+                        // If food is a burger, the quantity can be 1 to 2, otherwise, if it is Fries, the quantity can be 2 to 4
+                        int qty = food.equals("Burger") ? num.nextInt(1, 3) : num.nextInt(2, 4);
+                        // Adds the item and number of that item as a pain
+                        items.add(new String[]{food, String.valueOf(qty)});
                     }
-                    if ((stall).equals("Blue")){
+                    if (stall.equals("Blue")) {
                         int choice = num.nextInt(2);
-                        if (choice == 0){
-                            Order[i] = "MilkShake";
-                            QuantityOf(Order[i], looped);
-                        }
-                        if (choice == 1){
-                            Order[i] = "IceCream";
-                            QuantityOf(Order[i], looped);
-                        }
+                        // Type of food, milk shakes or ice cream at random
+                        String food = choice == 0 ? "MilkShake" : "IceCream";
+                        // If food is a milk shakes, the quantity can be 1 to 2, otherwise, if it is ice cream, the quantity can be 2 to 5
+                        int qty = food.equals("MilkShake") ? num.nextInt(1, 3) : num.nextInt(2, 5);
+                        // Adds the item and number of that item as a pain
+                        items.add(new String[]{food, String.valueOf(qty)});
                     }
                 }
-                break;
             }
-            case (2) -> {
-                System.out.println("level 2 food posibilities");
-            }
-            case (3) -> {
-                System.out.println("level 3 food posibilities");
-            }
+            case 2 -> System.out.println("level 2 food possibilities");
+            case 3 -> System.out.println("level 3 food possibilities");
         }
     }
 
-    private void QuantityOf(String food, int i) {
-        Random num = new Random();
-        switch (food) {
-            case ("Burger")-> {
-                int quantity = num.nextInt(1, 3);
-                OrderQuantity[i] = quantity;
-                System.out.println("Burger: " + OrderQuantity[i]);
-                break;
-            }
-            case ("Fries")-> {
-                int quantity = num.nextInt(2, 4);
-                OrderQuantity[i] = quantity;
-                System.out.println("Fries: " + OrderQuantity[i]);
-                break;
-            }
-            case ("MilkShake")-> {
-                int quantity = num.nextInt(1, 3);
-                OrderQuantity[i] = quantity;
-                System.out.println("MilkShake: " + OrderQuantity[i]);
-                break;
-            }
-            case ("IceCream")-> {
-                int quantity = num.nextInt(2, 5);
-                OrderQuantity[i] = quantity;
-                System.out.println("IceCream: " + OrderQuantity[i]);
-                break;
-            }
+    // Reduce the first item's quantity by 1, remove it if it hits 0. Returns true if order is now empty.
+    public boolean fulfillNext() {
+        if (items.isEmpty()) return true;
+        String[] first = items.get(0);
+        int qty = Integer.parseInt(first[1]) - 1;
+        if (qty <= 0) {
+            items.remove(0);
+        } else {
+            first[1] = String.valueOf(qty);
         }
+        return items.isEmpty();
+    }
+
+    public boolean isEmpty() {
+        return items.isEmpty();
     }
 }
