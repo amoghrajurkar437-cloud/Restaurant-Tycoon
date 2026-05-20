@@ -94,7 +94,7 @@ public class Player extends Entity {
                 collisionOn = true;
             }
 
-            // If collision is fasle, player can move
+            // If collision is false, player can move
             if (collisionOn == false) {
                 if(gp.gameState.equals(gp.WORLD_STATE)) {
                     switch (direction) {
@@ -167,12 +167,12 @@ public class Player extends Entity {
         }
 
         if(gp.gameState.equals(gp.STALL_STATE)) {
-            // Exit zone matches the door drawn in TileManager — bottom-right, one tile from each wall
+            // Exit zone spans the full height of the door (7 tiles tall)
             Rectangle exitZone = new Rectangle(
                     gp.tileM.doorX,
                     gp.tileM.doorY,
                     gp.tileSize,
-                    gp.tileSize
+                    gp.tileSize * 7
             );
             Rectangle playerBox = new Rectangle(
                     roomX,
@@ -213,7 +213,7 @@ public class Player extends Entity {
         gp.gameState = gp.WORLD_STATE;
         // Reset restock typing state so it doesn't carry over to next visit
         gp.restockPanel.typingMode = false;
-        gp.keyH.typingMode         = false;
+        gp.keyH.typingMode = false;
         CollisionChecker.lastContactStall = "";
         gp.repaint();
     }

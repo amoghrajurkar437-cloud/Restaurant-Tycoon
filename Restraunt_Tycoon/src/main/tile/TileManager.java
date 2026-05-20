@@ -40,7 +40,7 @@ public class TileManager {
 
     public TileManager(Gamepanel gp) {
         this.gp = gp;
-        tile = new Tile[11];
+        tile = new Tile[25];
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
 
         stallTileSize = gp.tileSize * 4;
@@ -50,7 +50,7 @@ public class TileManager {
 
         // Door is one tileSize away from the right and bottom walls
         doorX = gp.screenWidth  - gp.tileSize;
-        doorY = gp.screenHeight - gp.tileSize * 8;
+        doorY = gp.screenHeight - gp.tileSize * 11;
 
         getTileImage();
         loadMap("/res/maps/worldmap1.txt");
@@ -63,14 +63,14 @@ public class TileManager {
     }
 
     private BufferedImage loadImage(String fileName) {
-        try (InputStream is = getClass().getResourceAsStream("/tiles/" + fileName)) {
+        try (InputStream is = getClass().getResourceAsStream(fileName)) {
             if (is != null) {
                 return ImageIO.read(is);
             }
         } catch (IOException ignored) {}
 
         try {
-            return ImageIO.read(new File("res/tiles/" + fileName));
+            return ImageIO.read(new File(fileName));
         } catch (IOException e) {
             System.err.println("Failed to load tile image '" + fileName + "': " + e.getMessage());
             return null;
@@ -79,44 +79,96 @@ public class TileManager {
 
     private void getTileImage() {
         tile[0] = new Tile();
-        tile[0].image = loadImage("Grass.png");
+        tile[0].image = loadImage("res/tiles/Grass.png");
 
         tile[1] = new Tile();
-        tile[1].image = loadImage("Rock.png");
+        tile[1].image = loadImage("res/tiles/Rock.png");
         tile[1].collision = true;
 
         tile[2] = new Tile();
-        tile[2].image = loadImage("Stall_wall.png");
+        tile[2].image = loadImage("res/tiles/Stall_wall.png");
         tile[2].collision = true;
 
         tile[3] = new Tile();
-        tile[3].image = loadImage("Bush.png");
+        tile[3].image = loadImage("res/tiles/Bush.png");
         tile[3].collision = true;
 
         tile[4] = new Tile();
-        tile[4].image = loadImage("Stall_floor.png");
+        tile[4].image = loadImage("res/tiles/Stall_floor.png");
 
         tile[5] = new Tile();
-        tile[5].image = loadImage("Road.png");
+        tile[5].image = loadImage("res/tiles/Road.png");
 
         tile[6] = new Tile();
-        tile[6].image = loadImage("Rough_Path.png");
+        tile[6].image = loadImage("res/tiles/Rough_Path.png");
 
         tile[7] = new Tile();
-        tile[7].image = loadImage("Tree.png");
+        tile[7].image = loadImage("res/tiles/Tree.png");
         tile[7].collision = true;
 
         tile[8] = new Tile();
-        tile[8].image = loadImage("RedStall.png");
+        tile[8].image = loadImage("res/tiles/RedStall.png");
         tile[8].collision = true;
 
         tile[9] = new Tile();
-        tile[9].image = loadImage("BlueStall.png");
+        tile[9].image = loadImage("res/tiles/BlueStall.png");
         tile[9].collision = true;
 
         tile[10] = new Tile();
-        tile[10].image = loadImage("GreenStall.png");
+        tile[10].image = loadImage("res/tiles/GreenStall.png");
         tile[10].collision = true;
+
+        tile[11] = new Tile();
+        tile[11].image = loadImage("res/tiles/grill_horizontal_L.png");
+        tile[11].collision = true;
+
+        tile[12] = new Tile();
+        tile[12].image = loadImage("res/tiles/grill_horizontal_M.png");
+        tile[12].collision = true;
+
+        tile[13] = new Tile();
+        tile[13].image = loadImage("res/tiles/grill_horizontal_R.png");
+        tile[13].collision = true;
+
+        tile[14] = new Tile();
+        tile[14].image = loadImage("res/tiles/grill_vertical_B.png");
+        tile[14].collision = true;
+
+        tile[15] = new Tile();
+        tile[15].image = loadImage("res/tiles/grill_vertical_M.png");
+        tile[15].collision = true;
+
+        tile[16] = new Tile();
+        tile[16].image = loadImage("res/tiles/grill_vertical_T.png");
+        tile[16].collision = true;
+
+        tile[17] = new Tile();
+        tile[17].image = loadImage("res/tiles/ice_cream_fridge.png");
+        tile[17].collision = true;
+
+        tile[18] = new Tile();
+        tile[18].image = loadImage("res/tiles/milkshake_table.png");
+        tile[18].collision = true;
+
+        tile[19] = new Tile();
+        tile[19].image = loadImage("res/tiles/fryer.png");
+        tile[19].collision = true;
+
+        tile[20] = new Tile();
+        tile[20].image = loadImage("res/food/burger.png");
+
+        tile[21] = new Tile();
+        tile[21].image = loadImage("res/food/fries.png");
+
+        tile[22] = new Tile();
+        tile[22].image = loadImage("res/food/icecream.png");
+
+        tile[23] = new Tile();
+        tile[23].image = loadImage("res/food/soda.png");
+
+        tile[24] = new Tile();
+        tile[24].image = loadImage("res/tiles/stall_table.png");
+        tile[24].collision = true;
     }
 
     private void loadMap(String filePath) {
@@ -262,7 +314,7 @@ public class TileManager {
 
         // Draw the exit door in the stall
         g2.setColor(new Color(32, 32, 32));
-        g2.fillRect(doorX, doorY, gp.tileSize, gp.tileSize);
+        g2.fillRect(doorX, doorY, gp.tileSize, gp.tileSize * 7);
     }
 
     public int[][] getCurrentStallMap() {

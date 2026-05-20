@@ -17,19 +17,19 @@ public class Gamepanel extends JPanel implements Runnable {
     public final int screenWidth  = tileSize * maxScreenCol; // 1280 pixels
     public final int screenHeight = tileSize * maxScreenRow; // 960 pixels
 
-    int boostBarWidth  = 220;
+    int boostBarWidth = 220;
     int boostBarHeight = 28;
     int boostBarMargin = 20;
 
     int FPS = 60;
 
-    public TileManager tileM         = new TileManager(this);
-    public KeyHandler keyH           = new KeyHandler();
+    public TileManager tileM = new TileManager(this);
+    public KeyHandler keyH = new KeyHandler();
     Thread gameThread;
     public CollisionChecker cChecker = new CollisionChecker(this);
-    public Player player             = new Player(this, keyH);
-    public OrderBoard orderBoard     = new OrderBoard(this);
-    public Inventory inventory       = new Inventory();
+    public Player player = new Player(this, keyH);
+    public OrderBoard orderBoard = new OrderBoard(this);
+    public Inventory inventory = new Inventory();
     public RestockPanel restockPanel = new RestockPanel(inventory);
 
     // World settings
@@ -38,7 +38,7 @@ public class Gamepanel extends JPanel implements Runnable {
     public final int worldWidth  = tileSize * maxWorldCol;
     public final int worldHeight = tileSize * maxWorldRow;
 
-    public String gameState         = "WORLD";
+    public String gameState = "WORLD";
     public final String WORLD_STATE = "WORLD";
     public final String STALL_STATE = "STALL";
 
@@ -46,13 +46,13 @@ public class Gamepanel extends JPanel implements Runnable {
     public String currentStallType = "";
 
     // One-shot consumed flags so held keys don't repeat actions
-    private boolean toggleConsumed    = false;
-    private boolean fulfillConsumed   = false;
-    private boolean enterConsumed     = false;
+    private boolean toggleConsumed = false;
+    private boolean fulfillConsumed = false;
+    private boolean enterConsumed = false;
     private boolean backspaceConsumed = false;
-    private boolean upConsumed        = false;
-    private boolean downConsumed      = false;
-    private int     lastDigitConsumed = -1;
+    private boolean upConsumed = false;
+    private boolean downConsumed = false;
+    private int lastDigitConsumed = -1;
 
     public Gamepanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -60,6 +60,7 @@ public class Gamepanel extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+        this.setFocusTraversalKeysEnabled(false);
     }
 
     public void startGameThread() {
@@ -98,14 +99,14 @@ public class Gamepanel extends JPanel implements Runnable {
     }
 
     private void updateOrderBoard() {
-        // 1 — toggle order board visibility
+        // toggle order board visibility
         if (keyH.toggleOrdersPressed && !toggleConsumed) {
             orderBoard.visible = !orderBoard.visible;
             toggleConsumed = true;
         }
         if (!keyH.toggleOrdersPressed) toggleConsumed = false;
 
-        // 2 — fulfill next item on customer 1
+        // fulfill next item on customer 1
         if (keyH.fulfillPressed && !fulfillConsumed) {
             orderBoard.fulfillFirst();
             fulfillConsumed = true;
@@ -114,7 +115,7 @@ public class Gamepanel extends JPanel implements Runnable {
     }
 
     private void updateRestockPanel() {
-        // 1 — toggle restock panel visibility
+        // toggle restock panel visibility
         if (keyH.toggleOrdersPressed && !toggleConsumed) {
             restockPanel.visible = !restockPanel.visible;
             toggleConsumed = true;

@@ -6,6 +6,9 @@ public class CollisionChecker {
     public static String contactStall = "";
     public static String lastContactStall = "";
 
+    // Tracks the last equipment tile name printed, so we don't spam the terminal
+    private String lastPrintedEquipment = "";
+
     public CollisionChecker(Gamepanel gp) {
         this.gp = gp;
     }
@@ -120,7 +123,10 @@ public class CollisionChecker {
                 if (topRow < 0) return true;
                 int t1 = gp.tileM.getCurrentStallMap()[leftCol][topRow];
                 int t2 = gp.tileM.getCurrentStallMap()[rightCol][topRow];
-                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) return true;
+                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) {
+                    printEquipmentContact(t1 != 0 ? t1 : t2);
+                    return true;
+                }
             }
             case "down" -> {
                 bottomRow = (bottom + speed) / gp.tileSize;
@@ -129,7 +135,10 @@ public class CollisionChecker {
                 if (bottomRow >= 15) return true;
                 int t1 = gp.tileM.getCurrentStallMap()[leftCol][bottomRow];
                 int t2 = gp.tileM.getCurrentStallMap()[rightCol][bottomRow];
-                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) return true;
+                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) {
+                    printEquipmentContact(t1 != 0 ? t1 : t2);
+                    return true;
+                }
             }
             case "left" -> {
                 leftCol  = (left - speed) / gp.tileSize;
@@ -138,7 +147,10 @@ public class CollisionChecker {
                 if (leftCol < 0) return true;
                 int t1 = gp.tileM.getCurrentStallMap()[leftCol][topRow];
                 int t2 = gp.tileM.getCurrentStallMap()[leftCol][bottomRow];
-                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) return true;
+                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) {
+                    printEquipmentContact(t1 != 0 ? t1 : t2);
+                    return true;
+                }
             }
             case "right" -> {
                 rightCol = (right + speed) / gp.tileSize;
@@ -147,10 +159,36 @@ public class CollisionChecker {
                 if (rightCol >= 20) return true;
                 int t1 = gp.tileM.getCurrentStallMap()[rightCol][topRow];
                 int t2 = gp.tileM.getCurrentStallMap()[rightCol][bottomRow];
-                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) return true;
+                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) {
+                    printEquipmentContact(t1 != 0 ? t1 : t2);
+                    return true;
+                }
             }
         }
+
+        // No collision — clear the last printed name so walking away and back prints again
+        lastPrintedEquipment = "";
         return false;
+    }
+
+    // Prints the equipment name once when the player first makes contact
+    private void printEquipmentContact(int tileNum) {
+        String name = getEquipmentName(tileNum);
+        if (name.isEmpty()) return;
+        if (name.equals(lastPrintedEquipment)) return;
+        lastPrintedEquipment = name;
+        System.out.println(name);
+    }
+
+    // Maps equipment tile numbers to readable names
+    private String getEquipmentName(int tileNum) {
+        return switch (tileNum) {
+            case 11, 12, 13, 14, 15, 16 -> "grill";
+            case 17 -> "ice cream fridge";
+            case 18 -> "milkshake table";
+            case 19 -> "fryer";
+            default -> "";
+        };
     }
 
     private String getStallName(int tileNum) {
