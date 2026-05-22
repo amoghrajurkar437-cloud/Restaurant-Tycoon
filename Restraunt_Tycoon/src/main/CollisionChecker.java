@@ -6,8 +6,8 @@ public class CollisionChecker {
     public static String contactStall = "";
     public static String lastContactStall = "";
 
-    // Tracks the last equipment tile name printed, so we don't spam the terminal
-    private String lastPrintedEquipment = "";
+    // Tracks the last station tile name printed, so we don't spam the terminal
+    private String lastStation = "";
 
     public CollisionChecker(Gamepanel gp) {
         this.gp = gp;
@@ -30,11 +30,12 @@ public class CollisionChecker {
         int stallBottomRow = entityBottomWorldY / gp.stallTileSize;
         int tileNum1, tileNum2;
 
-        // Reset contactStall each frame — will be re-set if actively colliding
+        // Reset contactStall each frame to make sure it only has a value while we're actually touching the stall
+        // lastContactStall is used to track the last stall we touched so we don't enter repeatedly while standing still
         contactStall = "";
         lastContactStall = "";
 
-        // Check stall layer
+        // Checks collision with stall tiles in the world map, and sets contactStall if we touched one
         switch (entity.direction) {
             case "up" -> {
                 stallTopRow = (entityTopWorldY - entity.speed) / gp.stallTileSize;
@@ -74,7 +75,7 @@ public class CollisionChecker {
             }
         }
 
-        // Check tile layer
+        // Checks collision with world tiles
         switch (entity.direction) {
             case "up" -> {
                 entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
@@ -107,81 +108,82 @@ public class CollisionChecker {
         }
     }
 
+    // Collision inside stall with stations and other collidable tiles
     public boolean checkStallTile(int roomX, int roomY, String direction, int speed) {
-        int left   = roomX + gp.player.solidArea.x;
-        int right  = roomX + gp.player.solidArea.x + gp.player.solidArea.width;
-        int top    = roomY + gp.player.solidArea.y;
+        int left = roomX + gp.player.solidArea.x;
+        int right = roomX + gp.player.solidArea.x + gp.player.solidArea.width;
+        int top = roomY + gp.player.solidArea.y;
         int bottom = roomY + gp.player.solidArea.y + gp.player.solidArea.height;
 
         int leftCol, rightCol, topRow, bottomRow;
 
         switch (direction) {
             case "up" -> {
-                topRow   = (top - speed) / gp.tileSize;
-                leftCol  = left  / gp.tileSize;
+                topRow = (top - speed) / gp.tileSize;
+                leftCol = left / gp.tileSize;
                 rightCol = right / gp.tileSize;
                 if (topRow < 0) return true;
-                int t1 = gp.tileM.getCurrentStallMap()[leftCol][topRow];
-                int t2 = gp.tileM.getCurrentStallMap()[rightCol][topRow];
-                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) {
-                    printEquipmentContact(t1 != 0 ? t1 : t2);
+                int tile1 = gp.tileM.getCurrentStallMap()[leftCol][topRow];
+                int tile2 = gp.tileM.getCurrentStallMap()[rightCol][topRow];
+                if (gp.tileM.tile[tile1].collision || gp.tileM.tile[tile2].collision) {
+                    checkStationContact(tile1 != 0 ? tile1 : tile2);
                     return true;
                 }
             }
             case "down" -> {
                 bottomRow = (bottom + speed) / gp.tileSize;
-                leftCol   = left  / gp.tileSize;
-                rightCol  = right / gp.tileSize;
+                leftCol = left  / gp.tileSize;
+                rightCol = right / gp.tileSize;
                 if (bottomRow >= 15) return true;
-                int t1 = gp.tileM.getCurrentStallMap()[leftCol][bottomRow];
-                int t2 = gp.tileM.getCurrentStallMap()[rightCol][bottomRow];
-                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) {
-                    printEquipmentContact(t1 != 0 ? t1 : t2);
+                int tile1 = gp.tileM.getCurrentStallMap()[leftCol][bottomRow];
+                int tile2 = gp.tileM.getCurrentStallMap()[rightCol][bottomRow];
+                if (gp.tileM.tile[tile1].collision || gp.tileM.tile[tile2].collision) {
+                    checkStationContact(tile1 != 0 ? tile1 : tile2);
                     return true;
                 }
             }
             case "left" -> {
-                leftCol  = (left - speed) / gp.tileSize;
-                topRow   = top    / gp.tileSize;
-                bottomRow= bottom / gp.tileSize;
+                leftCol = (left - speed) / gp.tileSize;
+                topRow = top / gp.tileSize;
+                bottomRow = bottom / gp.tileSize;
                 if (leftCol < 0) return true;
-                int t1 = gp.tileM.getCurrentStallMap()[leftCol][topRow];
-                int t2 = gp.tileM.getCurrentStallMap()[leftCol][bottomRow];
-                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) {
-                    printEquipmentContact(t1 != 0 ? t1 : t2);
+                int tile1 = gp.tileM.getCurrentStallMap()[leftCol][topRow];
+                int tile2 = gp.tileM.getCurrentStallMap()[leftCol][bottomRow];
+                if (gp.tileM.tile[tile1].collision || gp.tileM.tile[tile2].collision) {
+                    checkStationContact(tile1 != 0 ? tile1 : tile2);
                     return true;
                 }
             }
             case "right" -> {
                 rightCol = (right + speed) / gp.tileSize;
-                topRow   = top    / gp.tileSize;
-                bottomRow= bottom / gp.tileSize;
+                topRow = top / gp.tileSize;
+                bottomRow = bottom / gp.tileSize;
                 if (rightCol >= 20) return true;
-                int t1 = gp.tileM.getCurrentStallMap()[rightCol][topRow];
-                int t2 = gp.tileM.getCurrentStallMap()[rightCol][bottomRow];
-                if (gp.tileM.tile[t1].collision || gp.tileM.tile[t2].collision) {
-                    printEquipmentContact(t1 != 0 ? t1 : t2);
+                int tile1 = gp.tileM.getCurrentStallMap()[rightCol][topRow];
+                int tile2 = gp.tileM.getCurrentStallMap()[rightCol][bottomRow];
+                if (gp.tileM.tile[tile1].collision || gp.tileM.tile[tile2].collision) {
+                    checkStationContact(tile1 != 0 ? tile1 : tile2);
                     return true;
                 }
             }
         }
 
         // No collision — clear the last printed name so walking away and back prints again
-        lastPrintedEquipment = "";
+        lastStation = "";
         return false;
     }
 
     // Prints the equipment name once when the player first makes contact
-    private void printEquipmentContact(int tileNum) {
-        String name = getEquipmentName(tileNum);
+    private void checkStationContact(int tileNum) {
+        String name = getStationName(tileNum);
         if (name.isEmpty()) return;
-        if (name.equals(lastPrintedEquipment)) return;
-        lastPrintedEquipment = name;
+        if (name.equals(lastStation)) return;
+        lastStation = name;
         System.out.println(name);
     }
 
     // Maps equipment tile numbers to readable names
-    private String getEquipmentName(int tileNum) {
+    private String getStationName(int tileNum) {
         return switch (tileNum) {
             case 11, 12, 13, 14, 15, 16 -> "grill";
             case 17 -> "ice cream fridge";
@@ -193,8 +195,8 @@ public class CollisionChecker {
 
     private String getStallName(int tileNum) {
         return switch (tileNum) {
-            case 8  -> "Red";
-            case 9  -> "Blue";
+            case 8 -> "Red";
+            case 9 -> "Blue";
             case 10 -> "Green";
             default -> "";
         };

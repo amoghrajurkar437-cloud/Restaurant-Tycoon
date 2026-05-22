@@ -18,7 +18,8 @@ public class KeyHandler implements KeyListener {
     public int lastDigit = -1;
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -27,8 +28,8 @@ public class KeyHandler implements KeyListener {
         // WASD moves the player — blocked while typing
         if (!typingMode) {
         if (code == KeyEvent.VK_W) upPressed = true;
-            if (code == KeyEvent.VK_S) downPressed  = true;
-            if (code == KeyEvent.VK_A) leftPressed  = true;
+            if (code == KeyEvent.VK_S) downPressed = true;
+            if (code == KeyEvent.VK_A) leftPressed = true;
             if (code == KeyEvent.VK_D) rightPressed = true;
         }
 

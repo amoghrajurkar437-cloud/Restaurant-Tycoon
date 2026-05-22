@@ -200,7 +200,7 @@ public class Player extends Entity {
 
     public void enterStall() {
         gp.gameState = gp.STALL_STATE;
-        gp.tileM.loadStallInsides();
+        gp.tileM.LoadStallInterior();
         gp.currentStallType = CollisionChecker.lastContactStall;
         // Load fresh orders for whichever stall we just walked into
         gp.orderBoard.loadForStall(CollisionChecker.lastContactStall);

@@ -53,13 +53,13 @@ public class TileManager {
         doorY = gp.screenHeight - gp.tileSize * 11;
 
         getTileImage();
-        loadMap("/res/maps/worldmap1.txt");
-        loadStalls("/res/maps/stalls.txt");
+        loadWorldMap("/res/maps/worldmap1.txt");
+        loadStallsInWorld("/res/maps/stalls.txt");
 
         // Load all three stall interiors so entering is instant
-        loadInteriorMap("red_stall.txt",   redStallMap);
-        loadInteriorMap("blue_stall.txt",  blueStallMap);
-        loadInteriorMap("green_stall.txt", greenStallMap);
+        LoadStallInteriorMap("red_stall.txt",   redStallMap);
+        LoadStallInteriorMap("blue_stall.txt",  blueStallMap);
+        LoadStallInteriorMap("green_stall.txt", greenStallMap);
     }
 
     private BufferedImage loadImage(String fileName) {
@@ -156,15 +156,19 @@ public class TileManager {
 
         tile[20] = new Tile();
         tile[20].image = loadImage("res/food/Burger_on_table.png");
+        tile[20].collision = true;
 
         tile[21] = new Tile();
         tile[21].image = loadImage("res/food/Fries_on_table.png");
+        tile[21].collision = true;
 
         tile[22] = new Tile();
         tile[22].image = loadImage("res/food/Ice_cream_on_table.png");
+        tile[22].collision = true;
 
         tile[23] = new Tile();
         tile[23].image = loadImage("res/food/Soda_on_table.png");
+        tile[23].collision = true;
 
         tile[24] = new Tile();
         tile[24].image = loadImage("res/tiles/stall_table.png");
@@ -174,7 +178,7 @@ public class TileManager {
         tile[25].image = loadImage("res/food/Milkshake_on_table.png");
     }
 
-    private void loadMap(String filePath) {
+    private void loadWorldMap(String filePath) {
         try {
             InputStream is = getClass().getResourceAsStream(filePath);
             BufferedReader br;
@@ -208,7 +212,7 @@ public class TileManager {
         }
     }
 
-    private void loadStalls(String filePath) {
+    private void loadStallsInWorld(String filePath) {
         try {
             InputStream is = getClass().getResourceAsStream(filePath);
             BufferedReader br;
@@ -241,7 +245,8 @@ public class TileManager {
         }
     }
 
-    private void loadInteriorMap(String fileName, int[][] targetMap) {
+    // Load the inside of the stalls
+    private void LoadStallInteriorMap(String fileName, int[][] targetMap) {
         try {
             InputStream is = getClass().getResourceAsStream("/res/maps/" + fileName);
             BufferedReader br;
@@ -274,7 +279,8 @@ public class TileManager {
         }
     }
 
-    public void loadStallInsides() {
+    // Checks if the player has just entered a stall, and if so loads the corresponding interior map
+    public void LoadStallInterior() {
         String current = CollisionChecker.lastContactStall;
 
         if (current.isEmpty()) {
@@ -282,7 +288,7 @@ public class TileManager {
             return;
         }
 
-        // Same stall already set = no work to do
+        // Do nothing if player just entered the same stall, avoids reloading the same map every frame while inside
         if (current.equals(lastHandledStall)) return;
 
         lastHandledStall = current;
@@ -293,8 +299,8 @@ public class TileManager {
         }
     }
 
+    // Draws the stall interior using the tile map, then draws the door on top
     public void drawStallInterior(Graphics2D g2) {
-        // Draws the stall interior using the tile map, then draws the door on top
         if (currentStallMap != null) {
             int col = 0;
             int row = 0;
@@ -309,10 +315,6 @@ public class TileManager {
                     row++;
                 }
             }
-        } else {
-            // Fallback in case no stall is loaded yet
-            g2.setColor(new Color(120, 90, 60));
-            g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
         }
 
         // Draw the exit door in the stall
@@ -320,6 +322,7 @@ public class TileManager {
         g2.fillRect(doorX, doorY, gp.tileSize, gp.tileSize * 7);
     }
 
+    // For CollisionChecker to access the currently loaded stall map and check for collisions with stations
     public int[][] getCurrentStallMap() {
         return currentStallMap;
     }

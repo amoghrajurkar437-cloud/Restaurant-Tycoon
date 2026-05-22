@@ -3,32 +3,52 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class OrderList {
-    // Each entry is { itemName, quantity }
+    // Each order is represented as a String array of length 2
+    // The first element is the item name and the second element is the quantity of that item remaining in the order
     public ArrayList<String[]> items = new ArrayList<>();
 
+    // Generate a random order list for a customer based on the current level and stall type
     public OrderList(int level, String stall) {
         Random num = new Random();
         switch (level) {
             case 1 -> {
-                int orderCount = num.nextInt(2, 4); // 2 or 3 items per customer
+                int orderCount = num.nextInt(3, 5); // 2 or 4 items per customer
+                System.out.println(orderCount);
                 for (int i = 0; i < orderCount; i++) {
+                    System.out.println("hi");
+                    // Add food based on stall
+                    // Generate a random item from the stall's menu, and a random quantity for that item
                     if (stall.equals("Red")) {
                         int choice = num.nextInt(2);
-                        // Type of food, burger or fries at random
-                        String food = choice == 0 ? "Burger" : "Fries";
-                        // If food is a burger, the quantity can be 1 to 2, otherwise, if it is Fries, the quantity can be 2 to 4
+                        String food;
+                        if (choice == 0) {
+                            food = "Burger";
+                            int qty = num.nextInt(1, 3);
+                            items.add(new String[]{food, String.valueOf(qty)});
+                        } else {
+                            food = "Fries";
+                            int qty = num.nextInt(2, 4);
+                            items.add(new String[]{food, String.valueOf(qty)});
+                        }
                         int qty = food.equals("Burger") ? num.nextInt(1, 3) : num.nextInt(2, 4);
-                        // Adds the item and number of that item as a pain
                         items.add(new String[]{food, String.valueOf(qty)});
+                        break;
                     }
                     if (stall.equals("Blue")) {
                         int choice = num.nextInt(2);
-                        // Type of food, milk shakes or ice cream at random
-                        String food = choice == 0 ? "MilkShake" : "IceCream";
-                        // If food is a milk shakes, the quantity can be 1 to 2, otherwise, if it is ice cream, the quantity can be 2 to 5
+                        String food;
+                        if (choice == 0) {
+                            food = "IceCream";
+                            int qty = num.nextInt(1, 3);
+                            items.add(new String[]{food, String.valueOf(qty)});
+                        } else {
+                            food = "MilkShake";
+                            int qty = num.nextInt(1, 3);
+                            items.add(new String[]{food, String.valueOf(qty)});
+                        }
                         int qty = food.equals("MilkShake") ? num.nextInt(1, 3) : num.nextInt(2, 5);
-                        // Adds the item and number of that item as a pain
                         items.add(new String[]{food, String.valueOf(qty)});
+                        break;
                     }
                 }
             }
@@ -37,8 +57,8 @@ public class OrderList {
         }
     }
 
-    // Reduce the first item's quantity by 1, remove it if it hits 0. Returns true if order is now empty.
-    public boolean fulfillNext() {
+    // Gives food, one item from the order list. Returns true if the order is completely fulfilled and can be removed from the queue
+    public boolean giveFood() {
         if (items.isEmpty()) return true;
         String[] first = items.get(0);
         int qty = Integer.parseInt(first[1]) - 1;
@@ -50,6 +70,7 @@ public class OrderList {
         return items.isEmpty();
     }
 
+    // Returns true if the order list is empty and the customer can be removed from the queue
     public boolean isEmpty() {
         return items.isEmpty();
     }
