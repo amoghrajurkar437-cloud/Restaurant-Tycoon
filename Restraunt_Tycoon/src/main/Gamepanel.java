@@ -52,6 +52,7 @@ public class Gamepanel extends JPanel implements Runnable {
     private boolean backspaceConsumed = false;
     private boolean upConsumed = false;
     private boolean downConsumed = false;
+    private boolean addOrderConsumed = false;
     private int lastDigitConsumed = -1;
 
     public Gamepanel() {
@@ -111,6 +112,12 @@ public class Gamepanel extends JPanel implements Runnable {
             orderBoard.fulfillFirst();
             fulfillConsumed = true;
         }
+
+        if (keyH.addOrderPressed && !addOrderConsumed) {
+            orderBoard.addOrder(currentStallType);
+            addOrderConsumed = true;
+        }
+if (!keyH.addOrderPressed) addOrderConsumed = false;
         if (!keyH.fulfillPressed) fulfillConsumed = false;
     }
 

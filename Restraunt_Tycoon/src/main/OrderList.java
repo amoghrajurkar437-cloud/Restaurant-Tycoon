@@ -12,43 +12,27 @@ public class OrderList {
         Random num = new Random();
         switch (level) {
             case 1 -> {
-                int orderCount = num.nextInt(3, 5); // 2 or 4 items per customer
-                System.out.println(orderCount);
+                int orderCount = num.nextInt(2, 5); // 2 or 4 items
                 for (int i = 0; i < orderCount; i++) {
-                    System.out.println("hi");
-                    // Add food based on stall
-                    // Generate a random item from the stall's menu, and a random quantity for that item
                     if (stall.equals("Red")) {
                         int choice = num.nextInt(2);
-                        String food;
                         if (choice == 0) {
-                            food = "Burger";
                             int qty = num.nextInt(1, 3);
-                            items.add(new String[]{food, String.valueOf(qty)});
+                            items.add(new String[]{"Burger", String.valueOf(qty)});
                         } else {
-                            food = "Fries";
                             int qty = num.nextInt(2, 4);
-                            items.add(new String[]{food, String.valueOf(qty)});
+                            items.add(new String[]{"Fries", String.valueOf(qty)});
                         }
-                        int qty = food.equals("Burger") ? num.nextInt(1, 3) : num.nextInt(2, 4);
-                        items.add(new String[]{food, String.valueOf(qty)});
-                        break;
                     }
                     if (stall.equals("Blue")) {
                         int choice = num.nextInt(2);
-                        String food;
                         if (choice == 0) {
-                            food = "IceCream";
                             int qty = num.nextInt(1, 3);
-                            items.add(new String[]{food, String.valueOf(qty)});
+                            items.add(new String[]{"IceCream", String.valueOf(qty)});
                         } else {
-                            food = "MilkShake";
                             int qty = num.nextInt(1, 3);
-                            items.add(new String[]{food, String.valueOf(qty)});
+                            items.add(new String[]{"MilkShake", String.valueOf(qty)});
                         }
-                        int qty = food.equals("MilkShake") ? num.nextInt(1, 3) : num.nextInt(2, 5);
-                        items.add(new String[]{food, String.valueOf(qty)});
-                        break;
                     }
                 }
             }

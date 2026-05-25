@@ -37,6 +37,12 @@ public class OrderBoard {
         if (done) customers.remove(0);
     }
 
+    // Press 3 — add a new customer with a new random order to the end of the queue
+    public void addOrder(String stall) {
+        if (stall.equals("Green")) return;
+        customers.add(new OrderList(1, stall));
+    }
+
     public void draw(Graphics2D g2) {
         if (!visible || customers.isEmpty()) return;
 

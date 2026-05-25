@@ -7,9 +7,10 @@ public class KeyHandler implements KeyListener {
     public boolean upArrow, downArrow; // arrow keys only — used to navigate the restock list
     public boolean interactPressed; // E — enter/exit stalls
     public boolean toggleOrdersPressed; // Tab — show/hide order/restock board
-    public boolean fulfillPressed; // 2 — fulfill order (red/blue)
+    public boolean fulfillPressed; // 2 — send order (red/blue)
     public boolean enterPressed; // Enter — select item or confirm quantity
     public boolean backspacePressed; // Backspace — delete last digit
+    public boolean addOrderPressed; // 3 — add new order
 
     // Blocks WASD while typing a quantity in the restock panel
     public boolean typingMode = false;
@@ -27,7 +28,7 @@ public class KeyHandler implements KeyListener {
 
         // WASD moves the player — blocked while typing
         if (!typingMode) {
-        if (code == KeyEvent.VK_W) upPressed = true;
+            if (code == KeyEvent.VK_W) upPressed = true;
             if (code == KeyEvent.VK_S) downPressed = true;
             if (code == KeyEvent.VK_A) leftPressed = true;
             if (code == KeyEvent.VK_D) rightPressed = true;
@@ -41,6 +42,7 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_E) interactPressed = true;
         if (code == KeyEvent.VK_TAB) toggleOrdersPressed = true;
         if (code == KeyEvent.VK_2) fulfillPressed= true;
+        if (code == KeyEvent.VK_3) addOrderPressed = true;
         if (code == KeyEvent.VK_ENTER) enterPressed = true;
         if (code == KeyEvent.VK_BACK_SPACE) backspacePressed = true;
 
@@ -65,6 +67,7 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_E) interactPressed = false;
         if (code == KeyEvent.VK_TAB) toggleOrdersPressed = false;
         if (code == KeyEvent.VK_2) fulfillPressed = false;
+        if (code == KeyEvent.VK_3) addOrderPressed = false;
         if (code == KeyEvent.VK_ENTER) enterPressed = false;
         if (code == KeyEvent.VK_BACK_SPACE) backspacePressed = false;
 
