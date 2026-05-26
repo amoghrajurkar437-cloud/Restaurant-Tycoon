@@ -9,7 +9,6 @@ import main.Gamepanel;
 import main.KeyHandler;
 
 public class Player extends Entity {
-    Gamepanel gp; // Reference to the Gamepanel, which can be used to access game-related properties and methods
     KeyHandler keyH; // Reference to the KeyHandler, which can be used to check the state of key presses
     public boolean boostActive = false; // Indicates whether the boost is currently active
     public int boostTimer = 0; // Timer to track the duration of the boost
@@ -24,7 +23,7 @@ public class Player extends Entity {
     public int roomY;
 
     public Player(Gamepanel gp, KeyHandler keyH) {
-        this.gp = gp; // Initialize the Gamepanel reference
+        super(gp);
         this.keyH = keyH; // Initialize the KeyHandler reference
 
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2); // Set the player's X position to the center of the screen
@@ -52,9 +51,8 @@ public class Player extends Entity {
         // Update game state logic
         isMoving = false;
 
-        if(keyH.interactPressed &&
-        gp.gameState.equals(gp.WORLD_STATE) &&
-        !CollisionChecker.lastContactStall.equals("")) {
+        // Check for interaction key press to enter stall, only if we're in the world and standing next to a stall
+        if(keyH.interactPressed && gp.gameState.equals(gp.WORLD_STATE) && !CollisionChecker.lastContactStall.equals("")) {
             enterStall();
             keyH.interactPressed = false;
         }
@@ -80,7 +78,7 @@ public class Player extends Entity {
                 gp.cChecker.checkTile(this);
             }
 
-            // Check world boundary — stop the player when the edge of the map would come into view
+            // Check world boundary and stop the player when the edge of the map would come into view
             if (direction.equals("up") && worldY - screenY <= 0) {
                 collisionOn = true;
             }
@@ -94,7 +92,7 @@ public class Player extends Entity {
                 collisionOn = true;
             }
 
-            // If collision is fasle, player can move
+            // If collision is false, player can move
             if (collisionOn == false) {
                 if(gp.gameState.equals(gp.WORLD_STATE)) {
                     switch (direction) {
@@ -167,12 +165,12 @@ public class Player extends Entity {
         }
 
         if(gp.gameState.equals(gp.STALL_STATE)) {
-            // Exit zone matches the door drawn in TileManager — bottom-right, one tile from each wall
+            // Exit zone spans the full height of the door (7 tiles tall)
             Rectangle exitZone = new Rectangle(
                     gp.tileM.doorX,
                     gp.tileM.doorY,
                     gp.tileSize,
-                    gp.tileSize
+                    gp.tileSize * 7
             );
             Rectangle playerBox = new Rectangle(
                     roomX,
@@ -200,7 +198,10 @@ public class Player extends Entity {
 
     public void enterStall() {
         gp.gameState = gp.STALL_STATE;
-        gp.tileM.loadStallInsides();
+        gp.tileM.LoadStallInterior();
+        gp.currentStallType = CollisionChecker.lastContactStall;
+        // Load fresh orders for whichever stall we just walked into
+        gp.orderBoard.loadForStall(CollisionChecker.lastContactStall);
         roomX = gp.screenWidth / 2 - gp.tileSize / 2;
         roomY = gp.screenHeight - 350;
         gp.repaint();
@@ -208,6 +209,9 @@ public class Player extends Entity {
 
     public void exitStall() {
         gp.gameState = gp.WORLD_STATE;
+        // Reset restock typing state so it doesn't carry over to next visit
+        gp.restockPanel.typingMode = false;
+        gp.keyH.typingMode = false;
         CollisionChecker.lastContactStall = "";
         gp.repaint();
     }
@@ -257,12 +261,11 @@ public class Player extends Entity {
             }
         }
 
+        // Move the player or move the world depending on the game state
         if(gp.gameState.equals(gp.WORLD_STATE)) {
-            g2.drawImage(image, screenX, screenY,
-                    gp.tileSize, gp.tileSize, null);
+            g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
         } else {
-            g2.drawImage(image, roomX, roomY,
-                    gp.tileSize, gp.tileSize, null);
+            g2.drawImage(image, roomX, roomY, gp.tileSize, gp.tileSize, null);
         }
     }
 
