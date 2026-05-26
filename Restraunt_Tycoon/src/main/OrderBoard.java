@@ -31,6 +31,7 @@ public class OrderBoard {
     }
 
     // Press 2 — give the next available item from any waiting customer, remove them if done
+    @SuppressWarnings("static-access")
     public void fulfillFirst() {
         if (customers.isEmpty()) {
             return;

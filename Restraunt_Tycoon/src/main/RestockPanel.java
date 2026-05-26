@@ -53,6 +53,7 @@ public class RestockPanel {
     }
 
     // Gives the typed quantity of items from the stall to the player
+    @SuppressWarnings("static-access")
     public void confirmTransfer() {
         if (typedQty.isEmpty()) {
             return;
@@ -73,6 +74,7 @@ public class RestockPanel {
         typedQty = "";
     }
 
+    @SuppressWarnings("static-access")
     public void draw(Graphics2D g2) {
         if (!visible) {
             return;

@@ -62,6 +62,7 @@ public class Gamepanel extends JPanel implements Runnable {
     private boolean backspaceUsed = false;
     private boolean upUsed = false;
     private boolean downUsed = false;
+    public boolean UpgradeCookUsed = false;
     private int lastDigitUsed = -1;
 
     public Gamepanel() {

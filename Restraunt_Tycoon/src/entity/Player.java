@@ -24,6 +24,7 @@ public class Player extends Entity {
     public final int screenY; // Y position of the player on the screen, which can be used for rendering the player
     public int roomX;
     public int roomY;
+    public int cookLevel = 1;
 
     public Player(Gamepanel gp, KeyHandler keyH) {
         super(gp);
@@ -58,6 +59,16 @@ public class Player extends Entity {
         if (keyH.interactPressed && gp.gameState.equals(gp.WORLD_STATE) && !CollisionChecker.lastContactStall.equals("")) {
             enterStall();
             keyH.interactPressed = false;
+        }
+
+        // Upgrade cook level
+        if (gp.keyH.UpgradeCookPressed && !gp.UpgradeCookUsed) {
+            UpgradeCookLevel();
+            System.out.println("Cook level upgraded to " + cookLevel);
+            gp.UpgradeCookUsed = true;
+        }
+        if (!gp.keyH.UpgradeCookPressed) {
+            gp.UpgradeCookUsed = false;
         }
 
         if (keyH.upPressed == true || keyH.downPressed == true || keyH.leftPressed == true || keyH.rightPressed == true) {
@@ -290,6 +301,10 @@ public class Player extends Entity {
         } else {
             g2.drawImage(image, roomX, roomY, gp.tileSize, gp.tileSize, null);
         }
+    }
+
+    public void UpgradeCookLevel() {
+        cookLevel++;
     }
 
     private void getPlayerImage() {

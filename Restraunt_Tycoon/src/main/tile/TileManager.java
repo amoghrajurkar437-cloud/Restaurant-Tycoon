@@ -210,7 +210,6 @@ public class TileManager {
                     row++;
                 }
             }
-            System.out.println(mapTileNum[0][0]);
             br.close();
         } catch (IOException e) {
             System.err.println("Error reading map file '" + filePath + "': " + e.getMessage());

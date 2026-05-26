@@ -17,7 +17,5 @@ public class Main {
         window.setVisible(true); // Make the window visible
         gamePanel.startGameThread(); // Start the game thread to run the game loops
         gamePanel.requestFocusInWindow(); // Request focus for the game panel to receive key inputs
-
-        // We need to have customers generating and walking even if we r inside the stalls
     }
 }

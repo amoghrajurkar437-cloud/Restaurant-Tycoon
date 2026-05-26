@@ -194,7 +194,25 @@ public class CollisionChecker {
             return;
         }
         lastStation = name;
-        System.out.println(name);
+        
+        switch (name) {
+            case "grill" -> {
+                Cook cook = new Cook("Burger", gp);
+                cook.startCooking();
+            }
+            case "fryer" -> {
+                Cook cook = new Cook("Fries", gp);
+                cook.startCooking();
+            }
+            case "milkshake table" -> {
+                Cook cook = new Cook("Milkshake", gp);
+                cook.startCooking();
+            }
+            case "ice cream fridge" -> {
+                Cook cook = new Cook("Ice Cream", gp);
+                cook.startCooking();
+            }
+        }
     }
 
     private String getStationName(int tileNum) {
@@ -272,7 +290,6 @@ public class CollisionChecker {
                 int tileNum = gp.tileM.stallTileNum[col][row];
                 if (tileNum != 0 && gp.tileM.tile[tileNum].collision) {
                     contactStall = getStallName(tileNum);
-                    System.out.println("Collision with stall detected! " + contactStall);
                     return;
                 }
             }

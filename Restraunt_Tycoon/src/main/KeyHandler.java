@@ -12,6 +12,7 @@ public class KeyHandler implements KeyListener {
     public boolean enterPressed; // Enter — select item or confirm quantity
     public boolean backspacePressed; // Backspace — delete last digit
     public boolean fulfillPressed; // 2 — send order (red/blue)
+    public boolean UpgradeCookPressed; // U - upgrade cooking level
 
     // Blocks WASD while typing a quantity in the restock panel
     public boolean typingMode = false;
@@ -27,8 +28,8 @@ public class KeyHandler implements KeyListener {
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
 
-        // WASD moves the player — blocked while typing
-        if (!typingMode) {
+        // WASD moves the player — blocked while typing and cooking
+        if (!typingMode && !Cook.cooking) {
             if (code == KeyEvent.VK_W) {
                 upPressed = true;
             }
@@ -68,6 +69,9 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_BACK_SPACE) {
             backspacePressed = true;
+        }
+        if (code == KeyEvent.VK_U) {
+            UpgradeCookPressed = true;
         }
 
         // Capture digit keys 0-9
@@ -116,6 +120,9 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_BACK_SPACE) {
             backspacePressed = false;
+        }
+        if (code == KeyEvent.VK_U) {
+            UpgradeCookPressed = false;
         }
 
         // Clear digit on release so each keypress registers once
