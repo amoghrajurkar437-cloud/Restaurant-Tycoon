@@ -39,9 +39,7 @@ public class Cook {
             }
         }
 
-        System.out.println("Base cook time for " + item + ": " + cookTime + " seconds");
         cookTime = (int) (cookTime * 1000 / gp.player.cookLevel); // Convert cook time to milliseconds and multiply by cook level
-        System.out.println("Cook time for " + item + ": " + cookTime + " ms");
     }
 
     @SuppressWarnings("BusyWait")
@@ -65,7 +63,6 @@ public class Cook {
                 if (ingredient2Index != -1) {
                     Inventory.takeFromPlayer(ingredient2Index, 1); // Remove the second ingredient if it exists
                 }
-                System.out.println("Cooking complete!");
                 cooking = false;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

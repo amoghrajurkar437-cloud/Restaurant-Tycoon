@@ -96,5 +96,11 @@ public class inventoryPanel {
             String line = arrow + Inventory.INVENTORY[itemIndex] + "  x" + qty;
             g2.drawString(line, panelX + PADDING, rowY);
         }
+
+        // Diplay player money at the bottom
+        g2.setFont(new Font("Arial", Font.BOLD, 22));
+        g2.setColor(Color.WHITE);
+        String moneyLine = "Money: $" + inventory.playerMoney;
+        g2.drawString(moneyLine, panelX + PADDING, panelY + panelH - PADDING);
     }
 }

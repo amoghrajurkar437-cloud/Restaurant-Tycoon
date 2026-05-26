@@ -53,15 +53,27 @@ public class RestockPanel {
     }
 
     // Gives the typed quantity of items from the stall to the player
-    @SuppressWarnings("static-access")
     public void confirmTransfer() {
         if (typedQty.isEmpty()) {
             return;
         }
-        int amount = Integer.parseInt(typedQty);
+        // Parse quantity and transfer items from stall to player
+        int qty;
+        try {
+            qty = Integer.parseInt(typedQty);
+        } catch (NumberFormatException e) {
+            // invalid number typed; cancel
+            typedQty = "";
+            typingMode = false;
+            return;
+        }
+
+        // Map selectedIndex (into buyable list) to actual inventory index
         int itemIndex = Buyable_items[selectedIndex];
-        int taken = inventory.giveToPlayer(itemIndex, amount);
-        System.out.println("Got " + taken + "x " + Inventory.INVENTORY[itemIndex]);
+        int taken = Inventory.giveToPlayer(itemIndex, qty);
+
+        // Record how many were taken so caller (Gamepanel) can charge player
+        Inventory.moneyGiven = taken;
 
         // Reset typing mode and clear typed quantity after confirming
         typedQty = "";

@@ -194,7 +194,7 @@ public class CollisionChecker {
             return;
         }
         lastStation = name;
-        
+
         switch (name) {
             case "grill" -> {
                 Cook cook = new Cook("Burger", gp);

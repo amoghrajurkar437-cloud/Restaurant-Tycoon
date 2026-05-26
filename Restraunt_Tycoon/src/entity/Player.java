@@ -226,7 +226,6 @@ public class Player extends Entity {
         // Load fresh orders for whichever stall we just walked into
         gp.orderBoard.loadForStall(CollisionChecker.lastContactStall);
         int waitingCustomers = gp.countCustomersOutsideStall(CollisionChecker.lastContactStall);
-        System.out.println("Customers: " + waitingCustomers + " at " + CollisionChecker.lastContactStall);
         if (waitingCustomers > 0) {
             for (int i = 0; i < waitingCustomers; i++) {
                 gp.orderBoard.customers.add(new OrderList(1, CollisionChecker.lastContactStall));

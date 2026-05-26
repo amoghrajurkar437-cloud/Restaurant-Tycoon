@@ -9,10 +9,11 @@ public class Inventory {
 
     // Player starts with 0 of everything
     public static int[] playerItems = new int[INVENTORY.length];
-    public int playerMoney = 1000;
+    public static double playerMoney = 1000;
 
     // Green stall starts with 1000 of everything
     public static int[] stallItems = new int[INVENTORY.length];
+    public static double moneyGiven;
 
     public Inventory() {
         for (int i = 0; i < INVENTORY.length; i++) {
@@ -27,16 +28,16 @@ public class Inventory {
         int canCarry = PLAYER_CAP - playerHas;
 
         // Take as many as possible within both limits
-        int actual = Math.min(amount, Math.min(inStall, canCarry));
-        if (actual <= 0) {
+        int taken = Math.min(amount, Math.min(inStall, canCarry));
+        if (taken <= 0) {
             return 0;
         }
+        stallItems[itemIndex] -= taken;
+        playerItems[itemIndex] += taken;
 
-        stallItems[itemIndex] -= actual;
-        playerItems[itemIndex] += actual;
+        moneyGiven += 0.5 * taken; // Each item costs the player 50% of its base value when restocking
 
-        printPlayerInventory();
-        return actual;
+        return taken;
     }
 
     public static boolean takeFromPlayer(int itemIndex, int amount) {
@@ -45,13 +46,6 @@ public class Inventory {
             return false;
         }
         playerItems[itemIndex] -= amount;
-        printPlayerInventory();
         return true;
-    }
-
-    private static void printPlayerInventory() {
-        for (int i = 0; i < INVENTORY.length; i++) {
-            System.out.println(INVENTORY[i] + ": " + playerItems[i]);
-        }
     }
 }

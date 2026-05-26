@@ -171,6 +171,7 @@ public class Gamepanel extends JPanel implements Runnable {
         }
     }
 
+    @SuppressWarnings("static-access")
     private void updateRestockPanel() {
         // toggle restock panel visibility
         if (keyH.toggleOrdersPressed && !toggleUsed) {
@@ -214,6 +215,7 @@ public class Gamepanel extends JPanel implements Runnable {
                 keyH.typingMode = true;
             } else {
                 restockPanel.confirmTransfer();
+                inventory.playerMoney -= .5 * inventory.moneyGiven; // Pay the stall for restocking
                 keyH.typingMode = false;
             }
             enterUsed = true;
