@@ -13,7 +13,7 @@ public class RestockPanel {
     private static final int CORNER_ARC = 24;
     private static final int INPUT_H = 54;
 
-    // Screen dimensions, must match Gamepanel
+    // Screen dimensions
     private static final int SCREEN_W = 1280;
     private static final int SCREEN_H = 960;
 

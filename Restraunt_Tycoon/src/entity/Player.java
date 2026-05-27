@@ -64,9 +64,13 @@ public class Player extends Entity {
 
         // Upgrade cook level
         if (gp.keyH.UpgradeCookPressed && !gp.UpgradeCookUsed) {
+            if (!canUpgradeCook()) {
+                gp.messages.showMessageForDuration("Not enough money to upgrade cook level!");
+                return;
+            }
             UpgradeCookLevel();
-            System.out.println("Cook level upgraded to " + cookLevel);
-            gp.inventory.playerMoney -= 100 * cookLevel; // Subtract money from player inventory
+            gp.messages.showMessageForDuration("Cook level upgraded to " + cookLevel + ", -$" + (100 * cookLevel));
+            gp.inventory.takeMoneyFromPlayer(100 * cookLevel); // Pay for the upgrade
             gp.UpgradeCookUsed = true;
         }
         if (!gp.keyH.UpgradeCookPressed) {
@@ -306,6 +310,12 @@ public class Player extends Entity {
 
     public void UpgradeCookLevel() {
         cookLevel++;
+    }
+
+    @SuppressWarnings("static-access")
+    private boolean canUpgradeCook() {
+        // Check if player has enough money to upgrade cook level
+        return gp.inventory.playerMoney >= 100 * (cookLevel + 1);
     }
 
     private void getPlayerImage() {

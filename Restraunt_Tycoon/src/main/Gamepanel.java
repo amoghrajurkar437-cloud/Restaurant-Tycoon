@@ -35,6 +35,7 @@ public class Gamepanel extends JPanel implements Runnable {
     public Inventory inventory = new Inventory();
     public RestockPanel restockPanel = new RestockPanel(inventory);
     public inventoryPanel inventoryPanel = new inventoryPanel(inventory);
+    public Messages messages;
 
     // Customer array
     public Customer[] customers;
@@ -74,6 +75,7 @@ public class Gamepanel extends JPanel implements Runnable {
         this.addKeyListener(keyH);
         this.setFocusable(true);
         this.setFocusTraversalKeysEnabled(false);
+        this.messages = new Messages("");
         // Initialize customers
         customers = new Customer[maxCustomers]; // Initialize the customers array with a maximum size
         spawnCustomer();
@@ -104,6 +106,7 @@ public class Gamepanel extends JPanel implements Runnable {
 
     public void update() {
         player.update();
+        messages.update();
 
         updateInventoryPanel();
         if (gameState.equals(STALL_STATE)) {
@@ -215,7 +218,7 @@ public class Gamepanel extends JPanel implements Runnable {
                 keyH.typingMode = true;
             } else {
                 restockPanel.confirmTransfer();
-                inventory.playerMoney -= .5 * inventory.moneyGiven; // Pay the stall for restocking
+                inventory.takeMoneyFromPlayer( .5 * inventory.moneyGiven);
                 keyH.typingMode = false;
             }
             enterUsed = true;
@@ -319,6 +322,8 @@ public class Gamepanel extends JPanel implements Runnable {
         player.draw(g2);
         drawBoostBar(g2);
 
+        messages.showMessage(g2);
+
         if (gameState.equals(STALL_STATE)) {
             if (currentStallType.equals("Green")) {
                 restockPanel.draw(g2);
@@ -327,7 +332,7 @@ public class Gamepanel extends JPanel implements Runnable {
             }
         }
 
-        // Draw inventory panel (available in both states)
+        // Draw inventory panel
         inventoryPanel.draw(g2);
 
         g2.dispose();

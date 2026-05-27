@@ -21,6 +21,14 @@ public class Inventory {
         }
     }
 
+    public static void giveMoneyToPlayer(double amount) {
+        playerMoney += amount;
+    }
+
+    public static void takeMoneyFromPlayer(double amount) {
+        playerMoney -= amount;
+    }
+
     // Caps at player limit and stall stock. Returns how many were actually taken.
     public static int giveToPlayer(int itemIndex, int amount) {
         int inStall = stallItems[itemIndex];

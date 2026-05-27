@@ -7,8 +7,10 @@ public class Cook {
     public int ingredient1Index; // Index of the first ingredient in the inventory
     public int ingredient2Index = -1; // Index of the second ingredient in the inventory (for burgers and milkshakes)
     public static boolean cooking = false;
+    private Gamepanel gp;
 
     public Cook(String item, Gamepanel gp) {
+        this.gp = gp;
         switch (item) {
             case "Burger" -> {
                 cookTime = 5;
@@ -45,7 +47,7 @@ public class Cook {
     @SuppressWarnings("BusyWait")
     public void startCooking() {
         if (!canCook()) {
-            System.out.println("Not enough ingredients to cook this item.");
+            gp.messages.showMessageForDuration("Not enough ingredients to cook " + Inventory.INVENTORY[foodIndex]);
             return;
         }
         // Start a new thread to handle the cooking process
