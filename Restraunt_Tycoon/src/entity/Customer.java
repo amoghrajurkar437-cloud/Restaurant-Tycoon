@@ -12,16 +12,16 @@ public class Customer extends Entity {
 
     public int screenX; // X position of the customer on the screen, which can be used for rendering the customer
     public int screenY; // Y position of the customer on the screen, which can be used for rendering the customer
-    public int stall1X = 760;
-    public int stall1Y = 750;
-    public int stall2X = 2200;
-    public int stall2Y = 1010;
+    public int stall1X = 760;// X position of the first stall, which can be used for determining the customer's path to the stall
+    public int stall1Y = 750;// Y position of the first stall, which can be used for determining the customer's path to the stall
+    public int stall2X = 2200;// X position of the second stall, which can be used for determining the customer's path to the stall
+    public int stall2Y = 1010;// Y position of the second stall, which can be used for determining the customer's path to the stall
     public int animationThreshold; // Variable to control the speed of the walking animation, which can be adjusted based on boost status
-    public Random rand = new Random();
+    public Random rand = new Random();// Random number generator to determine the customer's path and behavior
     public int InPath = rand.nextInt(2) + 1; // Randomly choose a path to come in for the customer to take (1 or 2)
+    public boolean isServed = false; // Flag to indicate whether the customer has been served or not
     public int outPath = InPath; // Out path is based on in path
-    public boolean isServed = false; // Flag to indicate whether the customer is currently served, which can be used to control animation and behavior
-    public boolean leftMap=false;
+    public boolean leftMap = false; // Flag to indicate whether the customer has left the map or not
 
     public Customer(Gamepanel gp, int x, int y) {
         super(gp);
@@ -88,31 +88,32 @@ public class Customer extends Entity {
             }
         }
     }
+
     public void outPath() {
-        if (InPath==1){
-                if (worldY > 0) {
-                    direction = "up";
-                    update(); // Update the customer's position and behavior based on the chosen InPath
-                } else if (worldX < 500) {
-                    direction = "right";
-                    update(); // Update the customer's position and behavior based on the chosen InPath
-                }
-                if (worldY < 20){
-                     leftMap = true;
-                }
-            
+        if (InPath == 1) {
+            if (worldY > 0) {
+                direction = "up";
+                update(); // Update the customer's position and behavior based on the chosen InPath
+            } else if (worldX < 500) {
+                direction = "right";
+                update(); // Update the customer's position and behavior based on the chosen InPath
+            }
+            if (worldY < 20) {
+                leftMap = true;
+            }
+
         }
-        if (InPath==2){
-                if (worldY > 0) {
-                    direction = "up";
-                    update(); // Update the customer's position and behavior based on the chosen InPath
-                } else if (worldX > 500) {
-                    direction = "left";
-                    update(); // Update the customer's position and behavior based on the chosen InPath
-                }
-                if (worldY < 20){
-                    leftMap = true;
-                }
+        if (InPath == 2) {
+            if (worldY > 0) {
+                direction = "up";
+                update(); // Update the customer's position and behavior based on the chosen InPath
+            } else if (worldX > 500) {
+                direction = "left";
+                update(); // Update the customer's position and behavior based on the chosen InPath
+            }
+            if (worldY < 20) {
+                leftMap = true;
+            }
 
         }
 

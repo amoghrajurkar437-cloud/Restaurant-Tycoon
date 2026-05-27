@@ -38,10 +38,11 @@ public class Gamepanel extends JPanel implements Runnable {
 
     // Customer array
     public Customer[] customers;
+    public int customersIndex = 0;
     public int customerCounter = 0;
     private long lastCustomerSpawnTime = System.currentTimeMillis();
-    private long customerSpawnInterval = 5000; // 15 seconds in milliseconds
-    private int maxCustomers = 8; // Set a reasonable max
+    private final long customerSpawnInterval = 15000; // 15 seconds in milliseconds
+    private final int maxCustomers = 8; // Set a reasonable max
 
     // World settings
     public final int maxWorldCol = 60;
@@ -143,24 +144,17 @@ public class Gamepanel extends JPanel implements Runnable {
     }
 
     private void spawnCustomer() {
-        if (customerCounter >= customers.length) {
-            return;
-        }
-
-        int x = tileSize + tileSize * 20;
-        int y = tileSize + tileSize * 38;
-        for (int i = 0; i < customers.length; i++) {
-            if (customers[i] == null) {
-                customers[i] = new Customer(this, x, y);
-                customerCounter++;
-                break;
-            }
+        if (customersIndex < customers.length) {
+            int x = tileSize + tileSize * 20;
+            int y = tileSize + tileSize * 38;
+            customers[customersIndex] = new Customer(this, x, y);
+            customersIndex++;
         }
     }
 
     public int countCustomersOutsideStall(String stallType) {
         int count = 0;
-        for (int i = 0; i < customerCounter; i++) {
+        for (int i = 0; i < customersIndex; i++) {
             Customer customer = customers[i];
             if (customer == null) {
                 continue;
@@ -187,9 +181,6 @@ public class Gamepanel extends JPanel implements Runnable {
         if (keyH.fulfillPressed && !fulfillUsed) {
             orderBoard.fulfillFirst();
             fulfillUsed = true;
-            if(orderBoard.customers.size() < countCustomersOutsideStall(currentStallType)) {
-                // Do something
-            }
         }
         if (!keyH.fulfillPressed) {
             fulfillUsed = false;
@@ -334,7 +325,7 @@ public class Gamepanel extends JPanel implements Runnable {
         if (gameState.equals(WORLD_STATE)) {
             tileM.draw(g2);
             // Draw all customers
-            for (int i = 0; i < customerCounter; i++) {
+            for (int i = 0; i < customersIndex; i++) {
                 customers[i].draw(g2);
             }
         } else if (gameState.equals(STALL_STATE)) {
