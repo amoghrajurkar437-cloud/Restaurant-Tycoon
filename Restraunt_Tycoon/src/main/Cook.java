@@ -6,6 +6,7 @@ public class Cook {
     public int foodIndex; // Index of the item being cooked in the inventory
     public int ingredient1Index; // Index of the first ingredient in the inventory
     public int ingredient2Index = -1; // Index of the second ingredient in the inventory (for burgers and milkshakes)
+    public static int price = 0;
     public static boolean cooking = false;
     private Gamepanel gp;
 
@@ -27,12 +28,14 @@ public class Cook {
                 foodIndex = 6; // Burgers
                 ingredient1Index = 0; // Raw Meat
                 ingredient2Index = 1; // Buns
+                price = 20;
                 break;
             }
             case "Fries" -> {
                 cookTime = 3;
                 foodIndex = 7; // Fries
                 ingredient1Index = 3; // Potatoes
+                price = 15;
                 break;
             }
             case "Milkshake" -> {
@@ -40,12 +43,14 @@ public class Cook {
                 foodIndex = 8; // Milk Shakes
                 ingredient1Index = 4; // Milk
                 ingredient2Index = 5; // Milk Shake Flavors
+                price = 25;
                 break;
             }
             case "Ice Cream" -> {
                 cookTime = 2;
                 foodIndex = 9; // Ice Creams
                 ingredient1Index = 2; // Ice
+                price = 15;
                 break;
             }
         }

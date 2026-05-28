@@ -59,10 +59,10 @@ public class OrderBoard {
                 int qty = Integer.parseInt(orderItem[1]) - 1;
                 if (qty <= 0) {
                     order.items.remove(itemIndex);
-                    gp.inventory.giveMoneyToPlayer(20); // Give player money for selling the item
+                    gp.inventory.giveMoneyToPlayer(Cook.price); // Give player money for selling the item
                 } else {
                     orderItem[1] = String.valueOf(qty);
-                    gp.inventory.giveMoneyToPlayer(20); // Give player money for selling the item
+                    gp.inventory.giveMoneyToPlayer(Cook.price); // Give player money for selling the item
                 }
 
                 if (order.items.isEmpty()) {
