@@ -1,7 +1,7 @@
 package main;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public class OrderBoard {
 
@@ -34,6 +34,7 @@ public class OrderBoard {
     @SuppressWarnings("static-access")
     public void fulfillFirst() {
         if (customers.isEmpty()) {
+            gp.messages.showMessageForDuration("No customers waiting.");
             return;
         }
 
@@ -58,8 +59,10 @@ public class OrderBoard {
                 int qty = Integer.parseInt(orderItem[1]) - 1;
                 if (qty <= 0) {
                     order.items.remove(itemIndex);
+                    gp.inventory.giveMoneyToPlayer(20); // Give player money for selling the item
                 } else {
                     orderItem[1] = String.valueOf(qty);
+                    gp.inventory.giveMoneyToPlayer(20); // Give player money for selling the item
                 }
 
                 if (order.items.isEmpty()) {
@@ -69,7 +72,7 @@ public class OrderBoard {
             }
         }
 
-        System.out.println("No available items in inventory to serve any customer.");
+        gp.messages.showMessageForDuration("No available items in inventory to serve any customer.");
     }
 
     // Map OrderList item names to Inventory indices

@@ -10,10 +10,29 @@ public class CollisionChecker {
     public static String lastContactStall = "";
     public static String lastStation = ""; // Used to track the last station to cook
 
+    /**
+     * Constructor for CollisionChecker, used in Gameplanel to check for
+     * collisions between every entity and the world tiles, stall tiles and
+     * other entities.
+     *
+     * @param gp Gamepanel instance, used to access the tile manager for
+     * collision data and player inventory for station contact checks
+     */
     public CollisionChecker(Gamepanel gp) {
         this.gp = gp;
     }
 
+    /**
+     * Checks for collision with player and world tiles, like trees, rock,
+     * walls, etc. If collsion is detected, it sets the player's collisionOn
+     * variable to true, which will stop movement in the Gameplanel update
+     * method. It also checks for collision with stall tiles and sets the
+     * contactStall variable to the name of the stall we're colliding with,
+     * which is used in. It does not check stop the players movement when
+     * colliding with stall tiles since we want the player to be able to walk
+     * around while touching the stall, only checks what stall it is for the
+     * order board and restock panel.
+     */
     public void checkTile(Entity entity) {
         int entityLeftWorldX = entity.worldX + entity.solidArea.x;
         int entityRightWorldX = entity.worldX + entity.solidArea.x + entity.solidArea.width;
@@ -113,6 +132,20 @@ public class CollisionChecker {
         }
     }
 
+    /**
+     * Checks for collision with stall tiles in the world map, its read from a
+     * different txt file, placed on top of the world map and uses a different
+     * tile size, so it needs sperate collion checking. It sets up the station
+     * contact for the Cook class to use, contactStall is used in the order
+     * board and restock panel to check if we're touching a stall to open those
+     * interfaces.
+     *
+     * @param roomX the x-coordinate of the room
+     * @param roomY the y-coordinate of the room
+     * @param direction the direction of movement
+     * @param speed the speed of movement
+     * @return true if there is a collision with a stall tile, false otherwise
+     */
     public boolean checkStallTile(int roomX, int roomY, String direction, int speed) {
         int left = roomX + gp.player.solidArea.x;
         int right = roomX + gp.player.solidArea.x + gp.player.solidArea.width;
@@ -185,6 +218,16 @@ public class CollisionChecker {
         return false;
     }
 
+    /**
+     * Checks for collision with the station tiles, and sets the lastStation
+     * variable to the stations name, which is used to start cooking. It uses
+     * the same code as stall tile collision checking, but instead of returning
+     * a boolean, it sets the station contact for the cook class to use and
+     * doesn't check world tile collisions.
+     *
+     * @param tileNum the tile number of the station tile we collided with, used
+     * to get the station name
+     */
     private void checkStationContact(int tileNum) {
         String name = getStationName(tileNum);
         if (name.isEmpty()) {
@@ -215,6 +258,16 @@ public class CollisionChecker {
         }
     }
 
+    /**
+     * Helper method to get the name of the station based on the tile number,
+     * used in checkStationContact to set the station contact for the cook
+     * class.
+     *
+     * @param tileNum the tile number of the station tile we collided with, used
+     * to get the station name
+     * @return the name of the station, or an empty string if the tile number
+     * doesn't correspond to a station
+     */
     private String getStationName(int tileNum) {
         return switch (tileNum) {
             case 11, 12, 13, 14, 15, 16 ->
@@ -230,6 +283,16 @@ public class CollisionChecker {
         };
     }
 
+    /**
+     * Helper method to get the name of the stall based on the tile number, used
+     * in checkTile to set the stall contact for the order board and restock
+     * panel.
+     *
+     * @param tileNum the tile number of the stall tile we collided with, used
+     * to get the stall name
+     * @return the name of the stall (red, blue or green), or an empty string if
+     * the tile number doesn't correspond to a stall
+     */
     private String getStallName(int tileNum) {
         return switch (tileNum) {
             case 8 ->
@@ -243,6 +306,22 @@ public class CollisionChecker {
         };
     }
 
+    /**
+     * Checks for collision between entities, used for player and customers so
+     * they don't walk through each other. It takes an array of entities to
+     * check against, which can be either the customers or the player depending
+     * on who is calling the method, and sets the collisionOn variable to true
+     * if there is a collision, which will stop movement in the Gameplanel
+     * update method. Used for customers to check if they're touching a stall to
+     * decide whether to start moving towards the order board or not
+     *
+     * @param entity the entity to check for collisions, either the player or a
+     * customer
+     * @param targets the array of entities to check against, either the
+     * customers or the player
+     * @return String name of the stall we're colliding with, or an empty string
+     * if we're not colliding with a stall.
+     */
     public String getCustomerContactStall(Entity entity) {
         // Same code from checkTile but returns the stall name instead of setting a variable and doesn't check world tile collisions since it's only used for customers who don't interact with those
         int entityLeftWorldX = entity.worldX + entity.solidArea.x;
@@ -267,6 +346,18 @@ public class CollisionChecker {
         return "";
     }
 
+    /**
+     * Checks for collision between a customer and the stall tiles, used to
+     * check if the customer is touching the stall to decide whether to start
+     * moving towards the order board or not. It uses the same code as checkTile
+     * but returns the stall name instead of setting a variable and doesn't
+     * check world tile collisions since it's only used for customers who don't
+     * interact with those. It also includes a small buffer so stationary
+     * customers still count as touching the stall, by expanding the area we
+     * check for stall collisions by the customer's speed in all directions.
+     *
+     * @param entity the customer to check for collisions
+     */
     public void customerCheckTile(Entity entity) {
         int entityLeftWorldX = entity.worldX + entity.solidArea.x;
         int entityRightWorldX = entity.worldX + entity.solidArea.x + entity.solidArea.width;
@@ -296,6 +387,18 @@ public class CollisionChecker {
         }
     }
 
+    /**
+     * Checks for collision between entities, used for entities so they don't
+     * walk through each other. It takes an array of entities to check against,
+     * which can be either the customers or the player depending on who is
+     * calling the method, and sets the collisionOn variable to true if there is
+     * a collision, which will stop movement in the Gameplanel update method.
+     * Used for customers to check if they're touching a stall to decide whether
+     * to start moving towards the order board or not
+     *
+     * @param entity
+     * @param targets
+     */
     public void checkEntityCollision(Entity entity, Entity[] targets) {
         // Check for collisions between entities
         if (targets == null) {

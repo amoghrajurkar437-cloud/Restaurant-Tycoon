@@ -9,6 +9,16 @@ public class Cook {
     public static boolean cooking = false;
     private Gamepanel gp;
 
+    /**
+     * Constructor for the Cook class, initializes the cook time based on the
+     * item being cooked and the player's cook level, as well as the inventory
+     * indices for the food and its ingredients
+     *
+     * @param item the name of the item to be cooked, used to determine cook
+     * time and ingredients indexes
+     * @param gp the Gamepanel instance, used to access the player's inventory
+     * and display messages
+     */
     public Cook(String item, Gamepanel gp) {
         this.gp = gp;
         switch (item) {
@@ -17,7 +27,6 @@ public class Cook {
                 foodIndex = 6; // Burgers
                 ingredient1Index = 0; // Raw Meat
                 ingredient2Index = 1; // Buns
-
                 break;
             }
             case "Fries" -> {
@@ -44,6 +53,17 @@ public class Cook {
         cookTime = (int) (cookTime * 1000 / gp.player.cookLevel); // Convert cook time to milliseconds and multiply by cook level
     }
 
+    /**
+     * Uses the canCook() method to check if the player has the ingredients
+     * needed to cook the item, if so it starts a new thread to handle the
+     * cooking process, simulates cooking using the thread sleep method and
+     * updates player inventory, adds the food and removes the ingredients. If
+     * the player doesn't have the necessary ingredients, it shows a message to
+     * the player indicating that they cannot cook the item. The warnig
+     * suppression is used to ignore the warning about busy waiting, since
+     * Thread.sleep is used to simulate the cooking time without freezing the
+     * main game thread.
+     */
     @SuppressWarnings("BusyWait")
     public void startCooking() {
         if (!canCook()) {
@@ -72,6 +92,11 @@ public class Cook {
         }).start();
     }
 
+    /**
+     * Checks if the player has the necessary ingredients to cook the item
+     *
+     * @return true if the player has all required ingredients, false otherwise
+     */
     public boolean canCook() {
         // Check if the player has the necessary ingredients to cook the item
         boolean hasIngredient1 = Inventory.playerItems[ingredient1Index] > 0;

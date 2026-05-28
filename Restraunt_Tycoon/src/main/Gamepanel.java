@@ -218,7 +218,7 @@ public class Gamepanel extends JPanel implements Runnable {
                 keyH.typingMode = true;
             } else {
                 restockPanel.confirmTransfer();
-                inventory.takeMoneyFromPlayer( .5 * inventory.moneyGiven);
+                inventory.takeMoneyFromPlayer(.5 * inventory.moneyGiven);
                 keyH.typingMode = false;
             }
             enterUsed = true;

@@ -1,9 +1,18 @@
-package main; // Package organize classes in Java, must be named the after the folder name
+package main;
 
 import javax.swing.*;
 
 public class Main {
 
+    // Main, cook, collisionchecker, player, inventory are done
+    // rest need to be done for java doc
+    /**
+     * Main method start the game, it create a JFrame window, sets it size and
+     * properties then it creates an instance of Gamepanel, adds it to the
+     * window, and starts the game thread for the main game loop
+     *
+     * @param args command line arguments, not used in this program
+     */
     public static void main(String[] args) {
         JFrame window = new JFrame(); // Create a new JFrame window
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close the application when the window is closed
@@ -18,6 +27,6 @@ public class Main {
         gamePanel.startGameThread(); // Start the game thread to run the game loops
         gamePanel.requestFocusInWindow(); // Request focus for the game panel to receive key inputs
 
-        // We need to add profit when player sells food, then make customer go away. Then, level 1 will be fully functional.
+        // then make customer go away. Then, level 1 will be fully functional.
     }
 }

@@ -1,10 +1,9 @@
 package entity;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
+import java.awt.image.*;
+import java.io.*;
+import javax.imageio.*;
 import main.CollisionChecker;
 import main.Gamepanel;
 import main.KeyHandler;
@@ -26,6 +25,17 @@ public class Player extends Entity {
     public int roomY;
     public int cookLevel = 1;
 
+    /**
+     * Constructer for the Player class, which initializes the player's
+     * position, speed, and loads the images for the player sprite. It also sets
+     * up the rect for collision detection and initalizes the reference to
+     * KeyHandler to check for key presses in the update method
+     *
+     * @param gp It is used to access states and methods in the GamePanel class,
+     * like for checking collsion and chainging game states
+     * @param keyH It is used to check for key presses in the update method, for
+     * movement and interactions
+     */
     public Player(Gamepanel gp, KeyHandler keyH) {
         super(gp);
         this.keyH = keyH; // Initialize the KeyHandler reference
@@ -42,6 +52,11 @@ public class Player extends Entity {
         getPlayerImage(); // Load player images
     }
 
+    /**
+     * Sets the default values for the player's position, speed, and diretion.
+     * It's called once in the construtor to initialize the player's state when
+     * the game starts.
+     */
     private void setDefaultValues() {
         worldX = gp.tileSize * 30; // Set the default X position of the player
         worldY = gp.tileSize * 22; // Set the default Y position of the player
@@ -51,6 +66,13 @@ public class Player extends Entity {
         direction = "down"; // Set the default direction of the player
     }
 
+    /**
+     * Update the player's state based on key presses and collision detection.
+     * It is called every frame in the main thread, and handles movement,
+     * animation, interactions with stalls, and boost mechanics Warrning
+     * surpresses static access because it needs to check the static variables
+     * from GamePanel
+     */
     @SuppressWarnings("static-access")
     public void update() {
         // Update game state logic
@@ -213,6 +235,13 @@ public class Player extends Entity {
         }
     }
 
+    /**
+     * Returns the ratio of boost charge for the boost meter display. If the
+     * boost is active or reloading is not active, it gets between a 1.0 and
+     * 0.0, used to draw the boost meter.
+     *
+     * @return a float between 0.0 and 1.0 representing the boost ratio
+     */
     public float getBoostChargeRatio() {
         if (boostActive || !boostReloading) {
             return 1.0f;
@@ -220,10 +249,20 @@ public class Player extends Entity {
         return 1.0f - (float) reloadTimer / maxBoostReload;
     }
 
+    /**
+     * Checks if boost is active, if its active, we can't use it again till it
+     * reloads, and it can be used if its not active and not actively reloading.
+     *
+     * @return true if boost can be used, false otherwise
+     */
     public boolean isBoostReady() {
         return !boostActive && !boostReloading;
     }
 
+    /**
+     * Handles the logic for entering a stall, including changing the game
+     * state, loading the stall interior, loading the orders, etc.
+     */
     public void enterStall() {
         // Change game state and load the stall interior
         gp.gameState = gp.STALL_STATE;
@@ -242,6 +281,10 @@ public class Player extends Entity {
         gp.repaint();
     }
 
+    /**
+     * Handles the logic for exiting a stall, including changing the game state,
+     * loaidn the world again, etc
+     */
     public void exitStall() {
         gp.gameState = gp.WORLD_STATE;
         // Reset restock typing state so it doesn't carry over to next visit
@@ -251,6 +294,13 @@ public class Player extends Entity {
         gp.repaint();
     }
 
+    /**
+     * Draws the player on the screen based on the current direction and
+     * animation state. It also uses the world state to see if it should draw
+     * the world or another stall.
+     *
+     * @param g2 the Graphics2D object is used to draw everything on the screen.
+     */
     public void draw(Graphics2D g2) {
         BufferedImage image = null; // Variable to hold the current image to be drawn based on the player's direction and animation state
 
@@ -308,16 +358,27 @@ public class Player extends Entity {
         }
     }
 
+    /**
+     * Upgrade the player's cook level, which increases the speed of cooking.
+     */
     public void UpgradeCookLevel() {
         cookLevel++;
     }
 
+    /**
+     * Checks if the player has enough money to upgrade cooking. Surpress the
+     * static access warning to check the static playerMoney variable in
+     * Inventory
+     */
     @SuppressWarnings("static-access")
     private boolean canUpgradeCook() {
         // Check if player has enough money to upgrade cook level
         return gp.inventory.playerMoney >= 100 * (cookLevel + 1);
     }
 
+    /**
+     * Loads the player movement animation images from res folder.
+     */
     private void getPlayerImage() {
         // Load player images for different directions and animations
         try {
