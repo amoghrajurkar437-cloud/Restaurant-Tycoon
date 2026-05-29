@@ -9,7 +9,7 @@ public class KeyHandler implements KeyListener {
     public boolean upArrow, downArrow; // arrow keys only — used to navigate the restock list
     public boolean interactPressed; // E — enter/exit stalls
     public boolean toggleOrdersPressed; // Tab — show/hide order/restock board
-    public boolean toggleInventoryPressed; // I - show/hide inventory
+    public boolean toggleInventoryPressed; // Q - show/hide inventory
     public boolean toggleInfoPressed; // 1 - show/hide information panel
     public boolean enterPressed; // Enter — select item or confirm quantity
     public boolean backspacePressed; // Backspace — delete last digit
@@ -78,7 +78,7 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_I) {
             toggleInventoryPressed = true;
         }
-        if (code == KeyEvent.VK_1) {
+        if (code == KeyEvent.VK_CAPS_LOCK) {
             toggleInfoPressed = true;
         }
 
@@ -135,7 +135,7 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_I) {
             toggleInventoryPressed = false;
         }
-        if (code == KeyEvent.VK_1) {
+        if (code == KeyEvent.VK_CAPS_LOCK) {
             toggleInfoPressed = false;
         }
 

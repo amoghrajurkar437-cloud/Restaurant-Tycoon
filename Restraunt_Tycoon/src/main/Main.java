@@ -6,6 +6,7 @@ public class Main {
 
     // Main, cook, collisionchecker, player, inventory are done
     // rest need to be done for java doc
+    // Add cook animation
     /**
      * Main method start the game, it create a JFrame window, sets it size and
      * properties then it creates an instance of Gamepanel, adds it to the
