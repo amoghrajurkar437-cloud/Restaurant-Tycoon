@@ -8,6 +8,8 @@ public class CollisionChecker {
     Gamepanel gp;
     public static String contactStall = "";
     public static String lastContactStall = "";
+    public static String contactTruck = "";
+    public static String lastContactTruck = "";
     public static String lastStation = ""; // Used to track the last station to cook
 
     /**
@@ -24,14 +26,13 @@ public class CollisionChecker {
 
     /**
      * Checks for collision with player and world tiles, like trees, rock,
-     * walls, etc. If collsion is detected, it sets the player's collisionOn
-     * variable to true, which will stop movement in the Gameplanel update
-     * method. It also checks for collision with stall tiles and sets the
-     * contactStall variable to the name of the stall we're colliding with,
-     * which is used in. It does not check stop the players movement when
-     * colliding with stall tiles since we want the player to be able to walk
-     * around while touching the stall, only checks what stall it is for the
-     * order board and restock panel.
+     * walls, etc. If collision is detected, it sets the player's collisionOn
+     * variable to true, which will stop movement in the Gamepanel update
+     * method. It also checks for collision with stall or truck tiles and sets
+     * the corresponding contact variable. It does not stop the player's
+     * movement when colliding with these tiles since we want the player to be
+     * able to walk around while touching them, only checks what stall or truck
+     * it is for entering.
      */
     public void checkTile(Entity entity) {
         int entityLeftWorldX = entity.worldX + entity.solidArea.x;
@@ -44,52 +45,95 @@ public class CollisionChecker {
         int entityTopRow = entityTopWorldY / gp.tileSize;
         int entityBottomRow = entityBottomWorldY / gp.tileSize;
 
-        int stallLeftCol = entityLeftWorldX / gp.stallTileSize;
-        int stallRightCol = entityRightWorldX / gp.stallTileSize;
-        int stallTopRow = entityTopWorldY / gp.stallTileSize;
-        int stallBottomRow = entityBottomWorldY / gp.stallTileSize;
+        int buildingLeftCol = entityLeftWorldX / gp.stallTileSize;
+        int buildingRightCol = entityRightWorldX / gp.stallTileSize;
+        int buildingTopRow = entityTopWorldY / gp.stallTileSize;
+        int buildingBottomRow = entityBottomWorldY / gp.stallTileSize;
         int tileNum1, tileNum2;
 
-        // Reset contactStall each frame to make sure it only has a value while we're actually touching the stall
-        // Preserve lastContactStall so we remember the last stall touched (used when entering a stall)
+        // Reset contact variables each frame
         contactStall = "";
+        contactTruck = "";
 
-        // Checks collision with stall tiles in the world map, and sets contactStall if we touched one
-        switch (entity.direction) {
-            case "up" -> {
-                stallTopRow = (entityTopWorldY - entity.speed) / gp.stallTileSize;
-                tileNum1 = gp.tileM.stallTileNum[stallLeftCol][stallTopRow];
-                tileNum2 = gp.tileM.stallTileNum[stallRightCol][stallTopRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
-                    contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
-                    lastContactStall = contactStall;
+        // Check collisions based on current level
+        if (gp.Current_level == 1) {
+            // Check collision with stall tiles in level 1
+            switch (entity.direction) {
+                case "up" -> {
+                    buildingTopRow = (entityTopWorldY - entity.speed) / gp.stallTileSize;
+                    tileNum1 = gp.tileM.stallTileNum[buildingLeftCol][buildingTopRow];
+                    tileNum2 = gp.tileM.stallTileNum[buildingRightCol][buildingTopRow];
+                    if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                        contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                        lastContactStall = contactStall;
+                    }
+                }
+                case "down" -> {
+                    buildingBottomRow = (entityBottomWorldY + entity.speed) / gp.stallTileSize;
+                    tileNum1 = gp.tileM.stallTileNum[buildingLeftCol][buildingBottomRow];
+                    tileNum2 = gp.tileM.stallTileNum[buildingRightCol][buildingBottomRow];
+                    if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                        contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                        lastContactStall = contactStall;
+                    }
+                }
+                case "left" -> {
+                    buildingLeftCol = (entityLeftWorldX - entity.speed) / gp.stallTileSize;
+                    tileNum1 = gp.tileM.stallTileNum[buildingLeftCol][buildingTopRow];
+                    tileNum2 = gp.tileM.stallTileNum[buildingLeftCol][buildingBottomRow];
+                    if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                        contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                        lastContactStall = contactStall;
+                    }
+                }
+                case "right" -> {
+                    buildingRightCol = (entityRightWorldX + entity.speed) / gp.stallTileSize;
+                    tileNum1 = gp.tileM.stallTileNum[buildingRightCol][buildingTopRow];
+                    tileNum2 = gp.tileM.stallTileNum[buildingRightCol][buildingBottomRow];
+                    if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                        contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                        lastContactStall = contactStall;
+                    }
                 }
             }
-            case "down" -> {
-                stallBottomRow = (entityBottomWorldY + entity.speed) / gp.stallTileSize;
-                tileNum1 = gp.tileM.stallTileNum[stallLeftCol][stallBottomRow];
-                tileNum2 = gp.tileM.stallTileNum[stallRightCol][stallBottomRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
-                    contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
-                    lastContactStall = contactStall;
+        } else if (gp.Current_level == 2) {
+            // Check collision with truck tiles in level 2
+            switch (entity.direction) {
+                case "up" -> {
+                    buildingTopRow = (entityTopWorldY - entity.speed) / gp.stallTileSize;
+                    tileNum1 = gp.tileM.truckTileNum[buildingLeftCol][buildingTopRow];
+                    tileNum2 = gp.tileM.truckTileNum[buildingRightCol][buildingTopRow];
+                    if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                        contactTruck = getTruckName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                        lastContactTruck = contactTruck;
+                    }
                 }
-            }
-            case "left" -> {
-                stallLeftCol = (entityLeftWorldX - entity.speed) / gp.stallTileSize;
-                tileNum1 = gp.tileM.stallTileNum[stallLeftCol][stallTopRow];
-                tileNum2 = gp.tileM.stallTileNum[stallLeftCol][stallBottomRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
-                    contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
-                    lastContactStall = contactStall;
+                case "down" -> {
+                    buildingBottomRow = (entityBottomWorldY + entity.speed) / gp.stallTileSize;
+                    tileNum1 = gp.tileM.truckTileNum[buildingLeftCol][buildingBottomRow];
+                    tileNum2 = gp.tileM.truckTileNum[buildingRightCol][buildingBottomRow];
+                    if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                        contactTruck = getTruckName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                        lastContactTruck = contactTruck;
+                    }
                 }
-            }
-            case "right" -> {
-                stallRightCol = (entityRightWorldX + entity.speed) / gp.stallTileSize;
-                tileNum1 = gp.tileM.stallTileNum[stallRightCol][stallTopRow];
-                tileNum2 = gp.tileM.stallTileNum[stallRightCol][stallBottomRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
-                    contactStall = getStallName(tileNum1 != 0 ? tileNum1 : tileNum2);
-                    lastContactStall = contactStall;
+                case "left" -> {
+                    buildingLeftCol = (entityLeftWorldX - entity.speed) / gp.stallTileSize;
+                    tileNum1 = gp.tileM.truckTileNum[buildingLeftCol][buildingTopRow];
+                    tileNum2 = gp.tileM.truckTileNum[buildingLeftCol][buildingBottomRow];
+                    if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                        contactTruck = getTruckName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                        lastContactTruck = contactTruck;
+                    }
+                }
+                case "right" -> {
+                    buildingRightCol = (entityRightWorldX + entity.speed) / gp.stallTileSize;
+                    tileNum1 = gp.tileM.truckTileNum[buildingRightCol][buildingTopRow];
+                    tileNum2 = gp.tileM.truckTileNum[buildingRightCol][buildingBottomRow];
+                    if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                        contactTruck = getTruckName(tileNum1 != 0 ? tileNum1 : tileNum2);
+                        lastContactTruck = contactTruck;
+                    }
                 }
             }
         }
@@ -132,20 +176,18 @@ public class CollisionChecker {
     }
 
     /**
-     * Checks for collision with stall tiles in the world map, its read from a
-     * different txt file, placed on top of the world map and uses a different
-     * tile size, so it needs sperate collion checking. It sets up the station
-     * contact for the Cook class to use, contactStall is used in the order
-     * board and restock panel to check if we're touching a stall to open those
-     * interfaces.
+     * Checks for collision with interior tiles (stall or truck), reads from the
+     * currently loaded interior map. Sets up the station contact for the Cook
+     * class to use.
      *
      * @param roomX the x-coordinate of the room
      * @param roomY the y-coordinate of the room
      * @param direction the direction of movement
      * @param speed the speed of movement
-     * @return true if there is a collision with a stall tile, false otherwise
+     * @return true if there is a collision with an interior tile, false
+     * otherwise
      */
-    public boolean checkStallTile(int roomX, int roomY, String direction, int speed) {
+    public boolean checkInteriorTile(int roomX, int roomY, String direction, int speed) {
         int left = roomX + gp.player.solidArea.x;
         int right = roomX + gp.player.solidArea.x + gp.player.solidArea.width;
         int top = roomY + gp.player.solidArea.y;
@@ -161,8 +203,8 @@ public class CollisionChecker {
                 if (topRow < 0) {
                     return true;
                 }
-                int tile1 = gp.tileM.getCurrentStallMap()[leftCol][topRow];
-                int tile2 = gp.tileM.getCurrentStallMap()[rightCol][topRow];
+                int tile1 = gp.tileM.getCurrentInteriorMap()[leftCol][topRow];
+                int tile2 = gp.tileM.getCurrentInteriorMap()[rightCol][topRow];
                 if (gp.tileM.tile[tile1].collision || gp.tileM.tile[tile2].collision) {
                     checkStationContact(tile1 != 0 ? tile1 : tile2);
                     return true;
@@ -175,8 +217,8 @@ public class CollisionChecker {
                 if (bottomRow >= 15) {
                     return true;
                 }
-                int tile1 = gp.tileM.getCurrentStallMap()[leftCol][bottomRow];
-                int tile2 = gp.tileM.getCurrentStallMap()[rightCol][bottomRow];
+                int tile1 = gp.tileM.getCurrentInteriorMap()[leftCol][bottomRow];
+                int tile2 = gp.tileM.getCurrentInteriorMap()[rightCol][bottomRow];
                 if (gp.tileM.tile[tile1].collision || gp.tileM.tile[tile2].collision) {
                     checkStationContact(tile1 != 0 ? tile1 : tile2);
                     return true;
@@ -189,8 +231,8 @@ public class CollisionChecker {
                 if (leftCol < 0) {
                     return true;
                 }
-                int tile1 = gp.tileM.getCurrentStallMap()[leftCol][topRow];
-                int tile2 = gp.tileM.getCurrentStallMap()[leftCol][bottomRow];
+                int tile1 = gp.tileM.getCurrentInteriorMap()[leftCol][topRow];
+                int tile2 = gp.tileM.getCurrentInteriorMap()[leftCol][bottomRow];
                 if (gp.tileM.tile[tile1].collision || gp.tileM.tile[tile2].collision) {
                     checkStationContact(tile1 != 0 ? tile1 : tile2);
                     return true;
@@ -203,8 +245,8 @@ public class CollisionChecker {
                 if (rightCol >= 20) {
                     return true;
                 }
-                int tile1 = gp.tileM.getCurrentStallMap()[rightCol][topRow];
-                int tile2 = gp.tileM.getCurrentStallMap()[rightCol][bottomRow];
+                int tile1 = gp.tileM.getCurrentInteriorMap()[rightCol][topRow];
+                int tile2 = gp.tileM.getCurrentInteriorMap()[rightCol][bottomRow];
                 if (gp.tileM.tile[tile1].collision || gp.tileM.tile[tile2].collision) {
                     checkStationContact(tile1 != 0 ? tile1 : tile2);
                     return true;
@@ -215,6 +257,13 @@ public class CollisionChecker {
         // No collision — clear the last printed name so walking away and back prints again
         lastStation = "";
         return false;
+    }
+
+    /**
+     * Wrapper method for backward compatibility. Calls checkInteriorTile.
+     */
+    public boolean checkStallTile(int roomX, int roomY, String direction, int speed) {
+        return checkInteriorTile(roomX, roomY, direction, speed);
     }
 
     /**
@@ -299,6 +348,26 @@ public class CollisionChecker {
             case 9 ->
                 "Blue";
             case 10 ->
+                "Green";
+            default ->
+                "";
+        };
+    }
+
+    /**
+     * Helper method to get the name of the truck based on the tile number, used
+     * in checkTile to set the truck contact for entering.
+     *
+     * @param tileNum the tile number of the truck tile we collided with, used
+     * to get the truck name
+     * @return the name of the truck (red or green), or an empty string if the
+     * tile number doesn't correspond to a truck
+     */
+    private String getTruckName(int tileNum) {
+        return switch (tileNum) {
+            case 33 ->
+                "Red";
+            case 34 ->
                 "Green";
             default ->
                 "";

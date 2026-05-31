@@ -26,18 +26,6 @@ public class Gamepanel extends JPanel implements Runnable {
 
     int FPS = 60;
 
-    Thread gameThread; // Thread to run the game loop
-    public TileManager tileM = new TileManager(this);
-    public KeyHandler keyH = new KeyHandler();
-    public CollisionChecker cChecker = new CollisionChecker(this);
-    public Player player = new Player(this, keyH);
-    public OrderBoard orderBoard = new OrderBoard(this);
-    public Inventory inventory = new Inventory();
-    public RestockPanel restockPanel = new RestockPanel(inventory);
-    public inventoryPanel inventoryPanel = new inventoryPanel(inventory);
-    public InformationPanel informationPanel = new InformationPanel();
-    public Messages messages;
-
     // Customer array
     public Customer[] customers;
     public int customersIndex = 0;
@@ -51,9 +39,11 @@ public class Gamepanel extends JPanel implements Runnable {
     public final int worldWidth = tileSize * maxWorldCol;
     public final int worldHeight = tileSize * maxWorldRow;
 
-    public String gameState = "WORLD"; // Either "WORLD" or "STALL"
+    public String gameState = "WORLD";
     public final String WORLD_STATE = "WORLD";
     public final String STALL_STATE = "STALL";
+    public final String RESTOCK_STATE = "RESTOCK";
+    public int Current_level = 2;
 
     // Tracks which stall the player is currently inside
     public String currentStallType = "";
@@ -70,6 +60,18 @@ public class Gamepanel extends JPanel implements Runnable {
     public boolean UpgradeCookUsed = false;
     private int lastDigitUsed = -1;
 
+    Thread gameThread; // Thread to run the game loop
+    public TileManager tileM = new TileManager(this);
+    public KeyHandler keyH = new KeyHandler();
+    public CollisionChecker cChecker = new CollisionChecker(this);
+    public Player player = new Player(this, keyH);
+    public OrderBoard orderBoard = new OrderBoard(this);
+    public Inventory inventory = new Inventory();
+    public RestockPanel restockPanel = new RestockPanel(inventory);
+    public inventoryPanel inventoryPanel = new inventoryPanel(inventory);
+    public InformationPanel informationPanel = new InformationPanel();
+    public Messages messages;
+
     public Gamepanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(new Color(62, 194, 83));
@@ -78,9 +80,12 @@ public class Gamepanel extends JPanel implements Runnable {
         this.setFocusable(true);
         this.setFocusTraversalKeysEnabled(false);
         this.messages = new Messages("");
-        // Initialize customers
-        customers = new Customer[maxCustomers]; // Initialize the customers array with a maximum size
-        spawnCustomer();
+
+        if (Current_level == 1) {
+            // Initialize customers
+            customers = new Customer[maxCustomers]; // Initialize the customers array with a maximum size
+            spawnCustomer();
+        }
     }
 
     public void startGameThread() {
@@ -112,40 +117,41 @@ public class Gamepanel extends JPanel implements Runnable {
 
         updateInventoryPanel();
         updateInformationPanel();
-        if (gameState.equals(STALL_STATE)) {
-            if (currentStallType.equals("Green")) {
-                updateRestockPanel();
-            } else {
-                updateOrderBoard();
-            }
-        } else if (gameState.equals(WORLD_STATE)) {
-            // Update all customers
-            for (int i = 0; i < customers.length; i++) {
-                Customer customer = customers[i];
-                if (customer == null) {
-                    continue;
+        if (Current_level == 1) {
+            if (gameState.equals(STALL_STATE)) {
+                if (currentStallType.equals("Green")) {
+                    updateRestockPanel();
+                } else {
+                    updateOrderBoard();
                 }
-                if (!customer.isServed) {
-                    customer.InPath();
-                }
-                if (customer.isServed) {
-                    customer.outPath();
-                    if (customer.leftMap) {
-                        customers[i] = null; // Remove customer from array once they have left the map
-                        customersIndex--;
+            } else if (gameState.equals(WORLD_STATE)) {
+                // Update all customers
+                for (int i = 0; i < customers.length; i++) {
+                    Customer customer = customers[i];
+                    if (customer == null) {
                         continue;
                     }
+                    if (!customer.isServed) {
+                        customer.InPath();
+                    }
+                    if (customer.isServed) {
+                        customer.outPath();
+                        if (customer.leftMap) {
+                            customers[i] = null; // Remove customer from array once they have left the map
+                            customersIndex--;
+                            continue;
+                        }
+                    }
+                    // Always check stall contact each frame even if the customer isn't moving
+                    cChecker.customerCheckTile(customer);
+
                 }
-                // Always check stall contact each frame even if the customer isn't moving
-                cChecker.customerCheckTile(customer);
-
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastCustomerSpawnTime >= customerSpawnInterval) {
+                    spawnCustomer(); // Spawn a new customer if the spawn interval has passed
+                    lastCustomerSpawnTime = currentTime;
+                }
             }
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - lastCustomerSpawnTime >= customerSpawnInterval) {
-                spawnCustomer(); // Spawn a new customer if the spawn interval has passed
-                lastCustomerSpawnTime = currentTime;
-            }
-
         }
     }
 
@@ -397,7 +403,7 @@ public class Gamepanel extends JPanel implements Runnable {
                 }
             }
         } else if (gameState.equals(STALL_STATE)) {
-            tileM.drawStallInterior(g2);
+            tileM.drawInterior(g2);
         }
 
         player.draw(g2);

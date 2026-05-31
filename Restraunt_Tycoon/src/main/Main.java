@@ -24,7 +24,5 @@ public class Main {
         window.setVisible(true); // Make the window visible
         gamePanel.startGameThread(); // Start the game thread to run the game loops
         gamePanel.requestFocusInWindow(); // Request focus for the game panel to receive key inputs
-
-        // then make customer go away. Then, level 1 will be fully functional.
     }
 }
