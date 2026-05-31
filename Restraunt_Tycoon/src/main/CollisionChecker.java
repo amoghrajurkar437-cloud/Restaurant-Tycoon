@@ -303,6 +303,14 @@ public class CollisionChecker {
                 Cook cook = new Cook("Ice Cream", gp);
                 cook.startCooking();
             }
+            case "popcorn machine" -> {
+                Cook cook = new Cook("Popcorn", gp);
+                cook.startCooking();
+            }
+            case "soda fridge" -> {
+                Cook cook = new Cook("Soda", gp);
+                cook.startCooking();
+            }
         }
     }
 
@@ -326,6 +334,10 @@ public class CollisionChecker {
                 "milkshake table";
             case 19 ->
                 "fryer";
+            case 35 ->
+                "popcorn machine";
+            case 37 ->
+                "soda fridge";
             default ->
                 "";
         };

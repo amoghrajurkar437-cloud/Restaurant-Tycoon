@@ -38,8 +38,21 @@ public class OrderList {
                     }
                 }
             }
-            case 2 ->
-                System.out.println("level 2 food possibilities");
+            case 2 -> {
+                int orderCount = num.nextInt(2, 5); // 2 or 4 items
+                for (int i = 0; i < orderCount; i++) {
+                    if (stall.equals("Red") || stall.equals("Green")) {
+                        int choice = num.nextInt(2);
+                        if (choice == 0) {
+                            int qty = num.nextInt(1, 4);
+                            items.add(new String[]{"Popcorn", String.valueOf(qty)});
+                        } else {
+                            int qty = num.nextInt(1, 4);
+                            items.add(new String[]{"Soda", String.valueOf(qty)});
+                        }
+                    }
+                }
+            }
             case 3 ->
                 System.out.println("level 3 food possibilities");
         }

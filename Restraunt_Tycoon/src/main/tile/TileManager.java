@@ -43,7 +43,7 @@ public class TileManager {
 
     public TileManager(Gamepanel gp) {
         this.gp = gp;
-        tile = new Tile[35];
+        tile = new Tile[40];
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
 
         stallTileSize = gp.tileSize * 4;
@@ -64,7 +64,7 @@ public class TileManager {
         switch (gp.Current_level) {
             case 1 -> {
                 loadWorldMap("/res/maps/worldmap1.txt");
-                loadStallsInWorld("/res/maps/stalls");
+                loadStallsInWorld("/res/maps/stalls.txt");
 
                 // Preload all three stall interiors so entering is instant
                 loadInteriorMap("red_stall.txt", redStallMap);
@@ -169,7 +169,7 @@ public class TileManager {
         tile[17].collision = true;
 
         tile[18] = new Tile();
-        tile[18].image = loadImage("res/tiles/milkshake_table.png");
+        tile[18].image = loadImage("res/tiles/blender_table.png");
         tile[18].collision = true;
 
         tile[19] = new Tile();
@@ -228,6 +228,23 @@ public class TileManager {
         tile[34] = new Tile();
         tile[34].image = loadImage("res/tiles/Green_truck.png");
         tile[34].collision = true;
+
+        tile[35] = new Tile();
+        tile[35].image = loadImage("res/tiles/Popcorn_machine.png");
+        tile[35].collision = true;
+
+        tile[36] = new Tile();
+        tile[36].image = loadImage("res/tiles/Restraunt_floor.png");
+
+        tile[37] = new Tile();
+        tile[37].image = loadImage("res/tiles/Soda_Fridge.png");
+        tile[37].collision = true;
+
+        tile[38] = new Tile();
+        tile[38].image = loadImage("res/tiles/Truck_floor.png");
+
+        tile[39] = new Tile();
+        tile[39].image = loadImage("res/tiles/Truck_Restock_floor.png");
     }
 
     private void loadWorldMap(String filePath) {

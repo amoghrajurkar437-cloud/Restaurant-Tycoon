@@ -56,9 +56,23 @@ public class Cook {
                 price = 15;
                 break;
             }
+            case "Popcorn" -> {
+                cookTime = 3;
+                foodIndex = 11; // Popcorn
+                ingredient1Index = 10; // Kernels
+                price = 10;
+                break;
+            }
+            case "Soda" -> {
+                cookTime = 2;
+                foodIndex = 13; // Soda
+                ingredient1Index = 12; // Cans
+                price = 12;
+                break;
+            }
         }
 
-        cookTime = (int) (cookTime * 1000 / gp.player.cookLevel); // Convert cook time to milliseconds and multiply by cook level
+        cookTime = (int) (cookTime * 1000 / gp.player.cookLevel); // Convert cook time to milliseconds and scale by cook level
     }
 
     /**

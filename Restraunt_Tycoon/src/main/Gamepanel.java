@@ -43,7 +43,7 @@ public class Gamepanel extends JPanel implements Runnable {
     public final String WORLD_STATE = "WORLD";
     public final String STALL_STATE = "STALL";
     public final String RESTOCK_STATE = "RESTOCK";
-    public int Current_level = 2;
+    public int Current_level = 1;
 
     // Tracks which stall the player is currently inside
     public String currentStallType = "";
@@ -68,7 +68,7 @@ public class Gamepanel extends JPanel implements Runnable {
     public OrderBoard orderBoard = new OrderBoard(this);
     public Inventory inventory = new Inventory();
     public RestockPanel restockPanel = new RestockPanel(inventory);
-    public inventoryPanel inventoryPanel = new inventoryPanel(inventory);
+    public InventoryPanel inventoryPanel = new InventoryPanel(inventory);
     public InformationPanel informationPanel = new InformationPanel();
     public Messages messages;
 
@@ -117,40 +117,39 @@ public class Gamepanel extends JPanel implements Runnable {
 
         updateInventoryPanel();
         updateInformationPanel();
-        if (Current_level == 1) {
-            if (gameState.equals(STALL_STATE)) {
-                if (currentStallType.equals("Green")) {
-                    updateRestockPanel();
-                } else {
-                    updateOrderBoard();
+        if (gameState.equals(STALL_STATE)) {
+            if (currentStallType.equals("Green")) {
+                updateRestockPanel();
+            } else {
+                updateOrderBoard();
+            }
+        } else if (Current_level == 1 && gameState.equals(WORLD_STATE)) {
+            // Update all customers
+            for (int i = 0; i < customers.length; i++) {
+                Customer customer = customers[i];
+                if (customer == null) {
+                    continue;
                 }
-            } else if (gameState.equals(WORLD_STATE)) {
-                // Update all customers
-                for (int i = 0; i < customers.length; i++) {
-                    Customer customer = customers[i];
-                    if (customer == null) {
+                if (!customer.isServed) {
+                    customer.InPath();
+                }
+                if (customer.isServed) {
+                    customer.outPath();
+                    if (customer.leftMap) {
+                        customers[i] = null; // Remove customer from array once they have left the map
+                        customersIndex--;
                         continue;
                     }
-                    if (!customer.isServed) {
-                        customer.InPath();
-                    }
-                    if (customer.isServed) {
-                        customer.outPath();
-                        if (customer.leftMap) {
-                            customers[i] = null; // Remove customer from array once they have left the map
-                            customersIndex--;
-                            continue;
-                        }
-                    }
-                    // Always check stall contact each frame even if the customer isn't moving
-                    cChecker.customerCheckTile(customer);
+                }
+                // Always check stall contact each frame even if the customer isn't moving
+                cChecker.customerCheckTile(customer);
 
-                }
-                long currentTime = System.currentTimeMillis();
-                if (currentTime - lastCustomerSpawnTime >= customerSpawnInterval) {
-                    spawnCustomer(); // Spawn a new customer if the spawn interval has passed
-                    lastCustomerSpawnTime = currentTime;
-                }
+            }
+
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastCustomerSpawnTime >= customerSpawnInterval) {
+                spawnCustomer(); // Spawn a new customer if the spawn interval has passed
+                lastCustomerSpawnTime = currentTime;
             }
         }
     }
