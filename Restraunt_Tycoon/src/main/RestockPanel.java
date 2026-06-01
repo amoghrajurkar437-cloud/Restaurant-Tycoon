@@ -18,11 +18,13 @@ public class RestockPanel {
     private static final int SCREEN_H = 960;
 
     // Indices into Inventory.INVENTORY that the player is allowed to purchase.
-    // Ignores burgers, fries, milk shakes, icecreams and money
-    private static final int[] Buyable_items = {0, 1, 2, 3, 4, 5};
+    // Ignores burgers, fries, milk shakes, ice creams and money
+    private static final int[] Buyable_items = {0, 1, 2, 3, 4, 5, 10, 12, 14, 15};
+    private static final int MAX_VISIBLE_ROWS = 8;
 
     public boolean visible = true;
     private int selectedIndex = 0; // index into Buyable_items, not INVENTORY
+    private int scrollOffset = 0; // first visible row in the list
     private String typedQty = ""; // digits the player has typed so far
     public boolean typingMode = false; // true while the quantity box is active
 
@@ -35,7 +37,14 @@ public class RestockPanel {
         if (typingMode) {
             return;
         }
-        selectedIndex = (selectedIndex + dir + Buyable_items.length) % Buyable_items.length;
+        int totalItems = Buyable_items.length;
+        selectedIndex = (selectedIndex + dir + totalItems) % totalItems;
+
+        if (selectedIndex < scrollOffset) {
+            scrollOffset = selectedIndex;
+        } else if (selectedIndex >= scrollOffset + MAX_VISIBLE_ROWS) {
+            scrollOffset = selectedIndex - MAX_VISIBLE_ROWS + 1;
+        }
     }
 
     // Append a digit to the typed quantity, up to 4 digits long
@@ -106,7 +115,8 @@ public class RestockPanel {
         }
 
         int rows = Buyable_items.length;
-        int panelH = HEADER_H + rows * ROW_HEIGHT + PADDING + INPUT_H + PADDING * 2;
+        int visibleRows = Math.min(MAX_VISIBLE_ROWS, rows);
+        int panelH = HEADER_H + visibleRows * ROW_HEIGHT + PADDING + INPUT_H + PADDING * 2;
 
         // Center the panel on screen
         int panelX = (SCREEN_W - PANEL_W) / 2;
@@ -127,10 +137,11 @@ public class RestockPanel {
         g2.drawString("Restock Cart:", panelX + PADDING, panelY + PADDING + 10);
 
         // Item rows — only show buyable items
-        for (int i = 0; i < rows; i++) {
-            int itemIndex = Buyable_items[i];
+        for (int i = 0; i < visibleRows; i++) {
+            int itemListIndex = scrollOffset + i;
+            int itemIndex = Buyable_items[itemListIndex];
             int rowY = panelY + PADDING + HEADER_H + i * ROW_HEIGHT;
-            boolean selectedRow = (i == selectedIndex);
+            boolean selectedRow = (itemListIndex == selectedIndex);
 
             // Highlight selected row
             if (selectedRow) {
@@ -153,7 +164,7 @@ public class RestockPanel {
         }
 
         // Quantity input box
-        int boxY = panelY + PADDING + HEADER_H + rows * ROW_HEIGHT + PADDING / 2;
+        int boxY = panelY + PADDING + HEADER_H + visibleRows * ROW_HEIGHT + PADDING / 2;
 
         g2.setColor(new Color(30, 30, 30));
         g2.fillRoundRect(panelX + PADDING, boxY, PANEL_W - PADDING * 2, INPUT_H, 10, 10);

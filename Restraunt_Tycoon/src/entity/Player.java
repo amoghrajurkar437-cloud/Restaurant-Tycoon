@@ -78,10 +78,16 @@ public class Player extends Entity {
         // Update game state logic
         isMoving = false;
 
-        // Check for interaction key press to enter stall, only if we're in the world and standing next to a stall
-        if (keyH.interactPressed && gp.gameState.equals(gp.WORLD_STATE) && !CollisionChecker.lastContactStall.equals("")) {
-            enterStall();
-            keyH.interactPressed = false;
+        // Check for interaction key press to enter stall or truck, only if we're in the world and standing next to one
+        if (keyH.interactPressed && gp.gameState.equals(gp.WORLD_STATE)) {
+            if (gp.Current_level == 1 && !CollisionChecker.lastContactStall.equals("")) {
+                enterRoom("stall");
+                keyH.interactPressed = false;
+            } else if (gp.Current_level >= 2 && !CollisionChecker.lastContactTruck.equals("")) {
+                // Treat level 2+ as truck levels (includes level 3 fallback)
+                enterRoom("truck");
+                keyH.interactPressed = false;
+            }
         }
 
         // Upgrade cook level
@@ -260,38 +266,60 @@ public class Player extends Entity {
     }
 
     /**
-     * Handles the logic for entering a stall, including changing the game
-     * state, loading the stall interior, loading the orders, etc.
+     * Handles the logic for entering a room (stall or truck), including
+     * changing the game state, loading the interior, and stall-specific setup
+     * like orders.
      */
-    public void enterStall() {
-        // Change game state and load the stall interior
+    private void enterRoom(String roomType) {
         gp.gameState = gp.STALL_STATE;
-        gp.tileM.LoadStallInterior();
-        gp.currentStallType = CollisionChecker.lastContactStall;
-        // Load fresh orders for whichever stall we just walked into
-        gp.orderBoard.loadForStall(CollisionChecker.lastContactStall);
-        int waitingCustomers = gp.countCustomersOutsideStall(CollisionChecker.lastContactStall);
-        if (waitingCustomers > 0) {
-            for (int i = 0; i < waitingCustomers; i++) {
-                gp.orderBoard.customers.add(new OrderList(1, CollisionChecker.lastContactStall));
+        gp.tileM.loadInterior();
+
+        if ("stall".equals(roomType)) {
+            gp.currentStallType = CollisionChecker.lastContactStall;
+            gp.orderBoard.loadForStall(CollisionChecker.lastContactStall);
+            int waitingCustomers = gp.countCustomersOutsideStall(CollisionChecker.lastContactStall);
+            if (waitingCustomers > 0) {
+                for (int i = 0; i < waitingCustomers; i++) {
+                    gp.orderBoard.customers.add(new OrderList(1, CollisionChecker.lastContactStall));
+                }
             }
+        } else if ("truck".equals(roomType)) {
+            gp.currentStallType = CollisionChecker.lastContactTruck;
+            gp.orderBoard.loadForStall(CollisionChecker.lastContactTruck);
         }
+
         roomX = gp.screenWidth / 2 - gp.tileSize / 2;
         roomY = gp.screenHeight - 350;
         gp.repaint();
     }
 
     /**
-     * Handles the logic for exiting a stall, including changing the game state,
-     * loaidn the world again, etc
+     * Handles the logic for entering a stall, including changing the game
+     * state, loading the stall interior, loading the orders, etc.
      */
-    public void exitStall() {
+    public void enterStall() {
+        enterRoom("stall");
+    }
+
+    /**
+     * Handles the logic for exiting a room (stall or truck), including changing
+     * the game state and resetting contact tracking.
+     */
+    public void exitRoom() {
         gp.gameState = gp.WORLD_STATE;
-        // Reset restock typing state so it doesn't carry over to next visit
         gp.restockPanel.typingMode = false;
         gp.keyH.typingMode = false;
         CollisionChecker.lastContactStall = "";
+        CollisionChecker.lastContactTruck = "";
         gp.repaint();
+    }
+
+    /**
+     * Handles the logic for exiting a stall, including changing the game state,
+     * resetting the world again, etc
+     */
+    public void exitStall() {
+        exitRoom();
     }
 
     /**

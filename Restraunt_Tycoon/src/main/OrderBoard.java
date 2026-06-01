@@ -123,6 +123,14 @@ public class OrderBoard {
                 8; // "Milk Shakes"
             case "IceCream" ->
                 9; // "Ice Creams"
+            case "Popcorn" ->
+                11; // "Popcorn"
+            case "Soda" ->
+                13; // "Soda"
+            case "Coffee" ->
+                16; // "Coffee"
+            case "Omelet" ->
+                17; // "Omelet"
             default ->
                 -1;
         };

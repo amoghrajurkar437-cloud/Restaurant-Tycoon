@@ -26,18 +26,6 @@ public class Gamepanel extends JPanel implements Runnable {
 
     int FPS = 60;
 
-    Thread gameThread; // Thread to run the game loop
-    public TileManager tileM = new TileManager(this);
-    public KeyHandler keyH = new KeyHandler();
-    public CollisionChecker cChecker = new CollisionChecker(this);
-    public Player player = new Player(this, keyH);
-    public OrderBoard orderBoard = new OrderBoard(this);
-    public Inventory inventory = new Inventory();
-    public RestockPanel restockPanel = new RestockPanel(inventory);
-    public inventoryPanel inventoryPanel = new inventoryPanel(inventory);
-    public InformationPanel informationPanel = new InformationPanel();
-    public Messages messages;
-
     // Customer array
     public Customer[] customers;
     public int customersIndex = 0;
@@ -51,9 +39,10 @@ public class Gamepanel extends JPanel implements Runnable {
     public final int worldWidth = tileSize * maxWorldCol;
     public final int worldHeight = tileSize * maxWorldRow;
 
-    public String gameState = "WORLD"; // Either "WORLD" or "STALL"
+    public String gameState = "WORLD";
     public final String WORLD_STATE = "WORLD";
     public final String STALL_STATE = "STALL";
+    public int Current_level = 1;
 
     // Tracks which stall the player is currently inside
     public String currentStallType = "";
@@ -68,7 +57,21 @@ public class Gamepanel extends JPanel implements Runnable {
     private boolean upUsed = false;
     private boolean downUsed = false;
     public boolean UpgradeCookUsed = false;
+    public boolean SpaceUsed = false;
     private int lastDigitUsed = -1;
+
+    Thread gameThread; // Thread to run the game loop
+    public TileManager tileM = new TileManager(this);
+    public KeyHandler keyH = new KeyHandler();
+    public CollisionChecker cChecker = new CollisionChecker(this);
+    public Player player = new Player(this, keyH);
+    public OrderBoard orderBoard = new OrderBoard(this);
+    public Inventory inventory = new Inventory();
+    public RestockPanel restockPanel = new RestockPanel(inventory);
+    public InventoryPanel inventoryPanel = new InventoryPanel(inventory);
+    public InformationPanel informationPanel = new InformationPanel();
+    public Messages messages;
+    public boolean level3RestockZone = false;
 
     public Gamepanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -78,9 +81,12 @@ public class Gamepanel extends JPanel implements Runnable {
         this.setFocusable(true);
         this.setFocusTraversalKeysEnabled(false);
         this.messages = new Messages("");
-        // Initialize customers
-        customers = new Customer[maxCustomers]; // Initialize the customers array with a maximum size
-        spawnCustomer();
+
+        if (Current_level == 1) {
+            // Initialize customers
+            customers = new Customer[maxCustomers]; // Initialize the customers array with a maximum size
+            spawnCustomer();
+        }
     }
 
     public void startGameThread() {
@@ -110,15 +116,27 @@ public class Gamepanel extends JPanel implements Runnable {
         player.update();
         messages.update();
 
+        if (Current_level == 3) {
+            Rectangle zone = new Rectangle(33 * tileSize, 17 * tileSize, 4 * tileSize, 4 * tileSize);
+            Rectangle playerRect = new Rectangle(player.worldX, player.worldY, tileSize, tileSize);
+            level3RestockZone = zone.intersects(playerRect);
+            restockPanel.visible = level3RestockZone;
+        }
+
         updateInventoryPanel();
         updateInformationPanel();
+        updateLevel();
         if (gameState.equals(STALL_STATE)) {
             if (currentStallType.equals("Green")) {
                 updateRestockPanel();
             } else {
                 updateOrderBoard();
             }
-        } else if (gameState.equals(WORLD_STATE)) {
+        }
+
+        if (Current_level == 3 && level3RestockZone) {
+            updateRestockPanel();
+        } else if (Current_level == 1 && gameState.equals(WORLD_STATE)) {
             // Update all customers
             for (int i = 0; i < customers.length; i++) {
                 Customer customer = customers[i];
@@ -140,12 +158,12 @@ public class Gamepanel extends JPanel implements Runnable {
                 cChecker.customerCheckTile(customer);
 
             }
+
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastCustomerSpawnTime >= customerSpawnInterval) {
                 spawnCustomer(); // Spawn a new customer if the spawn interval has passed
                 lastCustomerSpawnTime = currentTime;
             }
-
         }
     }
 
@@ -190,6 +208,33 @@ public class Gamepanel extends JPanel implements Runnable {
             }
         }
         return null;
+    }
+
+    private void updateLevel() {
+        if (keyH.SpacePressed && !SpaceUsed) {
+            if (Current_level == 1 && gameState.equals(WORLD_STATE) && Inventory.playerMoney >= 1000) {
+                Current_level = 2;
+                tileM.reloadLevelMap();
+                // Reset player position and state for level 2
+                player.worldX = tileSize * 15;
+                player.worldY = tileSize * 22;
+                gameState = WORLD_STATE;
+                // Clear customers from level 1
+                customers = null;
+                customersIndex = 0;
+            } else if (Current_level == 2 && Inventory.playerMoney >= 2500) {
+                Current_level = 3;
+                tileM.reloadLevelMap();
+                // Reset player position and state for level 3
+                player.worldX = tileSize * 15;
+                player.worldY = tileSize * 22;
+                gameState = WORLD_STATE;
+            }
+            SpaceUsed = true;
+        }
+        if (!keyH.SpacePressed) {
+            SpaceUsed = false;
+        }
     }
 
     private void updateOrderBoard() {
@@ -397,7 +442,14 @@ public class Gamepanel extends JPanel implements Runnable {
                 }
             }
         } else if (gameState.equals(STALL_STATE)) {
-            tileM.drawStallInterior(g2);
+            tileM.drawInterior(g2);
+        }
+
+        if (Current_level == 3 && gameState.equals(WORLD_STATE)) {
+            g2.setColor(new Color(139, 69, 19));
+            int sx = 33 * tileSize - player.worldX + player.screenX;
+            int sy = 17 * tileSize - player.worldY + player.screenY;
+            g2.fillRect(sx, sy, 4 * tileSize, 4 * tileSize);
         }
 
         player.draw(g2);
@@ -412,6 +464,10 @@ public class Gamepanel extends JPanel implements Runnable {
             } else {
                 orderBoard.draw(g2);
             }
+        }
+
+        if (Current_level == 3 && level3RestockZone) {
+            restockPanel.draw(g2);
         }
 
         // Draw inventory panel

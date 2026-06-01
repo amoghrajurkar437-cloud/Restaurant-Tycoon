@@ -2,14 +2,14 @@ package main;
 
 public class Inventory {
 
-    public static final String[] INVENTORY = {"Raw Meat", "Buns", "Ice", "Potatoes", "Milk", "Milk Shake Flavors", "Burgers", "Fries", "Milk Shakes", "Ice Creams"};
+    public static final String[] INVENTORY = {"Raw Meat", "Buns", "Ice", "Potatoes", "Milk", "Milk Shake Flavors", "Burgers", "Fries", "Milk Shakes", "Ice Creams", "Kernels", "Popcorn", "Cans", "Soda", "Coffee Beans", "Eggs", "Coffee", "Omelet"};
 
     // Max the player can carry per item
     public static final int PLAYER_CAP = 100;
 
     // Player starts with 0 of everything
     public static int[] playerItems = new int[INVENTORY.length];
-    public static double playerMoney = 2;
+    public static double playerMoney = 300;
 
     // Green stall starts with 1000 of everything
     public static int[] stallItems = new int[INVENTORY.length];
@@ -22,6 +22,7 @@ public class Inventory {
     public Inventory() {
         for (int i = 0; i < INVENTORY.length; i++) {
             stallItems[i] = 1000;
+            playerItems[i] = 100;
         }
     }
 
