@@ -9,6 +9,7 @@ public class OrderBoard {
     // ArrayList where each element is a customer's full OrderList (their items + quantities).
     // It is final, but customers can still be added/removed from it
     public final ArrayList<OrderList> customers = new ArrayList<>();
+    public final ArrayList<OrderList> cars = new ArrayList<>();
 
     // Layout constants
     private static final int PANEL_X = 10;
@@ -41,6 +42,7 @@ public class OrderBoard {
      */
     public void loadForStall(String stall) {
         customers.clear();
+        cars.clear();
     }
 
     // Press 2 — give the next available item from any waiting customer, remove them if done
@@ -54,6 +56,105 @@ public class OrderBoard {
      */
     @SuppressWarnings("static-access")
     public void fulfillFirst() {
+
+        if (gp.Current_level == 3) {
+            if (customers.isEmpty() && cars.isEmpty()) {
+                gp.messages.showMessageForDuration("No customers waiting.");
+                return;
+            }
+
+            // CUSTOMER PRIORITY
+            for (int customerIndex = 0; customerIndex < customers.size(); customerIndex++) {
+                OrderList order = customers.get(customerIndex);
+                if (order.items.isEmpty()) {
+                    customers.remove(customerIndex);
+                    Customer servedCustomer = gp.getFirstWaitingCustomerStall(gp.currentStallType);
+                    if (servedCustomer != null) {
+                        servedCustomer.isServed = true;
+                    }
+                    servedCustomer = gp.getFirstWaitingCustomerTruck(gp.currentStallType);
+                    if (servedCustomer != null) {
+                        servedCustomer.isServed = true;
+                    }
+                    customerIndex--;
+                    continue;
+                }
+
+                for (int itemIndex = 0; itemIndex < order.items.size(); itemIndex++) {
+                    String[] orderItem = order.items.get(itemIndex);
+                    String itemName = orderItem[0];
+                    int invIndex = itemNameToIndex(itemName);
+                    if (invIndex == -1) {
+                        continue;
+                    }
+                    if (gp.inventory.playerItems[invIndex] <= 0) {
+                        continue;
+                    }
+                    // Serve exactly ONE item
+                    gp.inventory.playerItems[invIndex]--;
+                    int qty = Integer.parseInt(orderItem[1]) - 1;
+                    if (qty <= 0) {
+                        order.items.remove(itemIndex);
+                    } else {
+                        orderItem[1] = String.valueOf(qty);
+                    }
+                    gp.inventory.giveMoneyToPlayer(Cook.price);
+                    if (order.items.isEmpty()) {
+                        customers.remove(customerIndex);
+                        Customer servedCustomer = gp.getFirstWaitingCustomerStall(gp.currentStallType);
+                        if (servedCustomer != null) {
+                            servedCustomer.isServed = true;
+                        }
+                        servedCustomer = gp.getFirstWaitingCustomerTruck(gp.currentStallType);
+                        if (servedCustomer != null) {
+                            servedCustomer.isServed = true;
+                        }
+                    }
+                    return;
+                }
+            }
+
+            // NO CUSTOMER COULD BE SERVED -> TRY CARS
+            for (int carIndex = 0; carIndex < cars.size(); carIndex++) {
+                OrderList order = cars.get(carIndex);
+                if (order.items.isEmpty()) {
+                    cars.remove(carIndex);
+                    carIndex--;
+                    continue;
+                }
+                for (int itemIndex = 0; itemIndex < order.items.size(); itemIndex++) {
+                    String[] orderItem = order.items.get(itemIndex);
+                    String itemName = orderItem[0];
+                    int invIndex = itemNameToIndex(itemName);
+                    if (invIndex == -1) {
+                        continue;
+                    }
+                    if (gp.inventory.playerItems[invIndex] <= 0) {
+                        continue;
+                    }
+                    // Serve exactly ONE item
+                    gp.inventory.playerItems[invIndex]--;
+
+                    int qty = Integer.parseInt(orderItem[1]) - 1;
+                    if (qty <= 0) {
+                        order.items.remove(itemIndex);
+                    } else {
+                        orderItem[1] = String.valueOf(qty);
+                    }
+                    gp.inventory.giveMoneyToPlayer(Cook.price);
+                    if (order.items.isEmpty()) {
+                        cars.remove(carIndex);
+                    }
+                    return;
+                }
+            }
+
+            gp.messages.showMessageForDuration(
+                    "No available items in inventory to serve any customer.");
+            return;
+        }
+
+        // NORMAL LEVELS
         if (customers.isEmpty()) {
             gp.messages.showMessageForDuration("No customers waiting.");
             return;
@@ -64,7 +165,12 @@ public class OrderBoard {
             if (order.items.isEmpty()) {
                 customers.remove(customerIndex);
                 customerIndex--;
-                Customer servedCustomer = gp.getFirstWaitingCustomer(gp.currentStallType);
+                Customer servedCustomer = gp.getFirstWaitingCustomerStall(gp.currentStallType);
+                if (servedCustomer != null) {
+                    servedCustomer.isServed = true;
+                }
+
+                servedCustomer = gp.getFirstWaitingCustomerTruck(gp.currentStallType);
                 if (servedCustomer != null) {
                     servedCustomer.isServed = true;
                 }
@@ -78,21 +184,23 @@ public class OrderBoard {
                 if (invIndex == -1 || gp.inventory.playerItems[invIndex] <= 0) {
                     continue;
                 }
-
-                // Remove one from player inventory and fulfill one unit of this order item
-                gp.inventory.playerItems[invIndex] -= 1;
+                gp.inventory.playerItems[invIndex]--;
                 int qty = Integer.parseInt(orderItem[1]) - 1;
+
                 if (qty <= 0) {
                     order.items.remove(itemIndex);
-                    gp.inventory.giveMoneyToPlayer(Cook.price); // Give player money for selling the item
                 } else {
                     orderItem[1] = String.valueOf(qty);
-                    gp.inventory.giveMoneyToPlayer(Cook.price); // Give player money for selling the item
                 }
+                gp.inventory.giveMoneyToPlayer(Cook.price);
 
                 if (order.items.isEmpty()) {
                     customers.remove(customerIndex);
-                    Customer servedCustomer = gp.getFirstWaitingCustomer(gp.currentStallType);
+                    Customer servedCustomer = gp.getFirstWaitingCustomerStall(gp.currentStallType);
+                    if (servedCustomer != null) {
+                        servedCustomer.isServed = true;
+                    }
+                    servedCustomer = gp.getFirstWaitingCustomerTruck(gp.currentStallType);
                     if (servedCustomer != null) {
                         servedCustomer.isServed = true;
                     }
@@ -101,7 +209,8 @@ public class OrderBoard {
             }
         }
 
-        gp.messages.showMessageForDuration("No available items in inventory to serve any customer.");
+        gp.messages.showMessageForDuration(
+                "No available items in inventory to serve any customer.");
     }
 
     /**
@@ -143,7 +252,7 @@ public class OrderBoard {
      *
      * @param g2 The Graphics2D context to draw on
      */
-    public void draw(Graphics2D g2) {
+    public void drawCustomerOrder(Graphics2D g2) {
         if (!visible || customers.isEmpty()) {
             return;
         }
@@ -195,4 +304,59 @@ public class OrderBoard {
             }
         }
     }
+
+    public void drawCarOrder(Graphics2D g2) {
+        if (!visible || cars.isEmpty()) {
+            return;
+        }
+
+        int rows = cars.size();
+        int panelWidth = rows * ROW_WIDTH + PADDING * 2;
+
+        // Find max rows needed so background height fits the tallest column
+        int maxItems = 0;
+        for (OrderList o : cars) {
+            maxItems = Math.max(maxItems, o.items.size());
+        }
+        int panelHeight = HEADER_HEIGHT + maxItems * ROW_HEIGHT + PADDING * 2;
+
+        // Semi-transparent background
+        g2.setColor(new Color(0, 0, 0, 160));
+        g2.fillRoundRect(PANEL_X, PANEL_Y + 200, panelWidth, panelHeight, CORNER_ARC, CORNER_ARC);
+
+        // Border
+        g2.setColor(new Color(255, 255, 255, 60));
+        g2.setStroke(new BasicStroke(1.5f));
+        g2.drawRoundRect(PANEL_X, PANEL_Y + 200, panelWidth, panelHeight, CORNER_ARC, CORNER_ARC);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        // Draw each car's order in a column
+        for (int i = 0; i < rows; i++) {
+            OrderList order = cars.get(i);
+            int rowX = PANEL_X + PADDING + i * ROW_WIDTH;
+
+            // Divider line between columns
+            if (i > 0) {
+                g2.setColor(new Color(255, 255, 255, 40));
+                g2.setStroke(new BasicStroke(1f));
+                g2.drawLine(rowX - PADDING / 2, PANEL_Y + 206, rowX - PADDING / 2, PANEL_Y + 200 + panelHeight - 6);
+            }
+
+            // Header
+            g2.setFont(new Font("Arial", Font.BOLD, 13));
+            g2.setColor(new Color(80, 200, 255));
+            g2.drawString("Car " + (i + 1) + ":", rowX, PANEL_Y + 200 + PADDING + 14);
+
+            // Items and quantities
+            g2.setFont(new Font("Arial", Font.PLAIN, 13));
+            g2.setColor(Color.WHITE);
+            for (int j = 0; j < order.items.size(); j++) {
+                String[] item = order.items.get(j);
+                String line = item[0] + " x" + item[1];
+                int textY = PANEL_Y + 200 + PADDING + HEADER_HEIGHT + j * ROW_HEIGHT;
+                g2.drawString(line, rowX, textY);
+            }
+        }
+    }
+
 }

@@ -87,6 +87,28 @@ public class TileManager {
         }
     }
 
+    // Reload the world map when level changes
+    public void reloadLevelMap() {
+        switch (gp.Current_level) {
+            case 1 -> {
+                loadWorldMap("/res/maps/worldmap1.txt");
+                loadStallsInWorld("/res/maps/stalls.txt");
+                loadInteriorMap("red_stall.txt", redStallMap);
+                loadInteriorMap("blue_stall.txt", blueStallMap);
+                loadInteriorMap("green_stall.txt", greenStallMap);
+            }
+            case 2 -> {
+                loadWorldMap("/res/maps/worldmap2.txt");
+                loadTrucksInWorld("/res/maps/trucks.txt");
+                loadInteriorMap("red_truck", redtruckMap);
+                loadInteriorMap("green_truck", greentruckMap);
+            }
+            case 3 -> {
+                loadWorldMap("/res/maps/worldmap3.txt");
+            }
+        }
+    }
+
     private BufferedImage loadImage(String fileName) {
         try (InputStream is = getClass().getResourceAsStream(fileName)) {
             if (is != null) {
@@ -473,6 +495,16 @@ public class TileManager {
         }
     }
 
+    /**
+     * Clears any currently loaded interior and resets the last-handled markers.
+     * Call this when exiting an interior so stale state doesn't persist.
+     */
+    public void clearCurrentInterior() {
+        currentStallMap = null;
+        lastHandledStall = "";
+        lastHandledTruck = "";
+    }
+
     // Checks if the player has just entered a stall, and if so loads the corresponding interior map
     private void loadStallInterior() {
         String current = CollisionChecker.lastContactStall;
@@ -646,37 +678,7 @@ public class TileManager {
                 break;
             }
             case 3 -> {
-                while (stallCol < truckMapCol && stallRow < truckMapRow) {
-                    int truckNum = truckTileNum[stallCol][stallRow];
-
-                    if (truckNum != 0) {
-                        int truckWorldX = stallCol * truckTileSize;
-                        int truckWorldY = stallRow * truckTileSize;
-                        int truckScreenX = truckWorldX - gp.player.worldX + gp.player.screenX;
-                        int truckScreenY = truckWorldY - gp.player.worldY + gp.player.screenY;
-                        if (truckScreenX + truckTileSize > 0 && truckScreenX < gp.screenWidth
-                                && truckScreenY + truckTileSize > 0 && truckScreenY < gp.screenHeight) {
-                            for (int i = 0; i < 4; i++) {
-                                for (int j = 0; j < 4; j++) {
-                                    int bgTileX = stallCol * 4 + i;
-                                    int bgTileY = stallRow * 4 + j;
-                                    if (bgTileX < gp.maxWorldCol && bgTileY < gp.maxWorldRow) {
-                                        int bgTileNum = mapTileNum[bgTileX][bgTileY];
-                                        int bgScreenX = (stallCol * truckTileSize + i * gp.tileSize) - gp.player.worldX + gp.player.screenX;
-                                        int bgScreenY = (stallRow * truckTileSize + j * gp.tileSize) - gp.player.worldY + gp.player.screenY;
-                                        g2.drawImage(tile[bgTileNum].image, bgScreenX, bgScreenY, gp.tileSize, gp.tileSize, null);
-                                    }
-                                }
-                            }
-                            g2.drawImage(tile[truckNum].image, truckScreenX, truckScreenY, truckTileSize, truckTileSize, null);
-                        }
-                    }
-                    stallCol++;
-                    if (stallCol == truckMapCol) {
-                        stallCol = 0;
-                        stallRow++;
-                    }
-                }
+                // Level 3 has no trucks - do nothing
             }
         }
     }

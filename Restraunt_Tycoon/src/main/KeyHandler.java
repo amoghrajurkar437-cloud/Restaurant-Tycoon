@@ -15,6 +15,7 @@ public class KeyHandler implements KeyListener {
     public boolean backspacePressed; // Backspace — delete last digit
     public boolean fulfillPressed; // 2 — send order (red/blue)
     public boolean UpgradeCookPressed; // U - upgrade cooking level
+    public boolean SpacePressed; // Space - next level
 
     // Blocks WASD while typing a quantity in the restock panel
     public boolean typingMode = false;
@@ -81,6 +82,9 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_CAPS_LOCK) {
             toggleInfoPressed = true;
         }
+        if (code == KeyEvent.VK_SPACE) {
+            SpacePressed = true;
+        }
 
         // Capture digit keys 0-9
         if (code >= KeyEvent.VK_0 && code <= KeyEvent.VK_9) {
@@ -137,6 +141,9 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_CAPS_LOCK) {
             toggleInfoPressed = false;
+        }
+        if (code == KeyEvent.VK_SPACE) {
+            SpacePressed = false;
         }
 
         // Clear digit on release so each keypress registers once
