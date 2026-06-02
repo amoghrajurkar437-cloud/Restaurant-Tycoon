@@ -47,10 +47,8 @@ public class Car extends Entity {
     public void InPath() {
         if (worldX > gp.tileSize * 34) {
             direction = "left";
-        } else {
-            direction = "up"; // fallback if already past the zone horizontally
+            update();
         }
-        update();
     }
 
     public void outPath() {
@@ -63,16 +61,6 @@ public class Car extends Entity {
     }
 
     public void update() {
-        if (place_order && !isServed && isOnDropZone()) {
-            collisionOn = true; // Stop moving when placing order
-            return;
-        }
-        if (place_order && isServed) {
-            collisionOn = false; // Allow movement when order is fulfilled
-            outPath();
-            return;
-        }
-
         isMoving = false;
         collisionOn = false;
         gp.cChecker.checkEntityCollision(this, gp.cars); // Avoid other cars
@@ -91,25 +79,31 @@ public class Car extends Entity {
             collisionOn = true;
         }
 
-        if (!collisionOn) {
-            switch (direction) {
-                case "up" ->
-                    worldY -= speed;
-                case "down" ->
-                    worldY += speed;
-                case "left" ->
-                    worldX -= speed;
-                case "right" ->
-                    worldX += speed;
-            }
+        if (collisionOn == false) {
             isMoving = true;
+            switch (direction) {
+                case "up" -> {
+                    worldY -= speed; // Update worldX to reflect the customer's movement in the world
+                    isMoving = true;
+                    break;
+                }
+                case "down" -> {
+                    worldY += speed; // Update worldY to reflect the customer's movement in the world
+                    isMoving = true;
+                    break;
+                }
+                case "left" -> {
+                    worldX -= speed; // Update worldX to reflect the customer's movement in the world
+                    isMoving = true;
+                    break;
+                }
+                case "right" -> {
+                    worldX += speed; // Update worldX to reflect the customer's movement in the world
+                    isMoving = true;
+                    break;
+                }
+            }
         }
-    }
-
-    public boolean isOnDropZone() {
-        java.awt.Rectangle dropZone = new java.awt.Rectangle(gp.tileSize * 34, gp.tileSize * 36, gp.tileSize * 4, gp.tileSize * 4);
-        java.awt.Rectangle carArea = new java.awt.Rectangle(worldX + solidArea.x, worldY + solidArea.y, solidArea.width, solidArea.height);
-        return dropZone.intersects(carArea);
     }
 
     public void draw(Graphics2D g2) {
