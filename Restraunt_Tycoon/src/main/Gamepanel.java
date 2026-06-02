@@ -76,8 +76,8 @@ public class Gamepanel extends JPanel implements Runnable {
     public Car[] cars;
     public int carsIndex = 0;
     private long lastCarSpawnTime = System.currentTimeMillis();
-    private final long carSpawnInterval = 8000; // Spawn a car every 8 seconds in level 3
-    private final int maxCars = 5; // Max cars in level 3
+    private final long carSpawnInterval = 3000; // Spawn a car every 30 seconds in level 3
+    private final int maxCars = 3; // Max cars in level 3
 
     public Gamepanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -152,10 +152,9 @@ public class Gamepanel extends JPanel implements Runnable {
         if (gameState.equals(STALL_STATE)) {
             if (currentStallType.equals("Green")) {
                 updateRestockPanel();
-            } else {
-                updateOrderBoard();
             }
         }
+        updateOrderBoard();
 
         if (Current_level == 3 && level3RestockZone) {
             updateRestockPanel();
@@ -286,12 +285,22 @@ public class Gamepanel extends JPanel implements Runnable {
         if (cars == null) {
             return;
         }
-        Rectangle dropZone = new Rectangle(tileSize * 34, tileSize * 36, tileSize * 4, tileSize * 4);
 
         for (int i = 0; i < cars.length; i++) {
             Car car = cars[i];
             if (car == null) {
                 continue;
+            }
+            if (!car.isServed) {
+                car.InPath();
+            }
+            if (car.isServed) {
+                car.outPath();
+                if (car.leftMap) {
+                    cars[i] = null;
+                    carsIndex--;
+                    continue;
+                }
             }
 
             // Place the order once the car arrives on the grey 4x4 zone.
@@ -301,20 +310,10 @@ public class Gamepanel extends JPanel implements Runnable {
                     car.solidArea.width,
                     car.solidArea.height
             );
-            if (!car.place_order && !car.isServed && dropZone.intersects(carArea)) {
-                orderBoard.customers.add(new OrderList(3, "Red"));
+            if (!car.place_order && !car.isServed && carArea.intersects(carArea)) {
+                orderBoard.cars.add(new OrderList(3, "Red"));
                 orderBoard.visible = true;
                 car.place_order = true;
-            }
-
-            if (!car.isServed) {
-                car.InPath();
-            } else {
-                car.outPath();
-                if (car.leftMap) {
-                    cars[i] = null;
-                    carsIndex--;
-                }
             }
         }
     }
@@ -401,11 +400,12 @@ public class Gamepanel extends JPanel implements Runnable {
         if (cars == null) {
             return null;
         }
+
         for (Car car : cars) {
             if (car == null) {
                 continue;
             }
-            if (car.place_order && !car.isServed) {
+            if (!car.isServed) {
                 return car;
             }
         }
@@ -465,7 +465,7 @@ public class Gamepanel extends JPanel implements Runnable {
             toggleUsed = false;
         }
 
-        // fulfill next item on customer 1
+        // fulfill next item
         if (keyH.fulfillPressed && !fulfillUsed) {
             orderBoard.fulfillFirst();
             fulfillUsed = true;
@@ -689,12 +689,12 @@ public class Gamepanel extends JPanel implements Runnable {
             g2.fillRect(sx, sy, 4 * tileSize, 4 * tileSize);
         }
         player.draw(g2);
-
         messages.showMessage(g2);
 
         // Draw order board in-world if it's visible (used for level 3 world orders)
         if (orderBoard.visible) {
-            orderBoard.draw(g2);
+            orderBoard.drawCustomerOrder(g2);
+            orderBoard.drawCarOrder(g2);
         }
 
         drawBoostBar(g2);
@@ -704,7 +704,7 @@ public class Gamepanel extends JPanel implements Runnable {
             if (currentStallType.equals("Green")) {
                 restockPanel.draw(g2);
             } else {
-                orderBoard.draw(g2);
+                orderBoard.drawCustomerOrder(g2);
             }
         }
 

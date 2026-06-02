@@ -525,6 +525,7 @@ public class CollisionChecker {
 
         return "";
     }
+
     /**
      * Checks for collision between a customer and the stall tiles, used to
      * check if the customer is touching the stall to decide whether to start
